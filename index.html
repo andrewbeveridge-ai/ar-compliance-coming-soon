@@ -351,9 +351,9 @@ let cyc=false;
 function cycle(){
   if(cyc)return;cyc=true;
   setTimeout(()=>movers.forEach((m,i)=>{m.style.transition='none';m.style.animation=`orbit${i+1} 8s linear forwards`;}),1500);
-  const rb=11000;
+  const rb=9500;
   [3,2,1,0].forEach((mi,step)=>setTimeout(()=>{movers[mi].style.animation=`ret${mi+1} 1800ms cubic-bezier(0.25,0.1,0.25,1) forwards`;if(mi===2)coreEl.classList.add('brightened');},rb+step*600));
-  setTimeout(()=>{movers.forEach(m=>{m.style.animation='none';m.style.transition='opacity .5s';m.style.opacity='1';m.style.transform='translate(0px,0px)';});coreEl.classList.remove('brightened');cyc=false;setTimeout(cycle,2000);},rb+3*600+400+200);
+  setTimeout(()=>{movers.forEach(m=>{m.style.animation='none';m.style.transition='opacity .5s';m.style.opacity='1';m.style.transform='translate(0px,0px)';});coreEl.classList.remove('brightened');cyc=false;setTimeout(cycle,5000);},rb+3*600+2000+200);
 }
 setTimeout(cycle,1000);
 
