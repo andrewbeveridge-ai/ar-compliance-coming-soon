@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <meta name="theme-color" content="#0A0A0A">
   <title>Another Realm Compliance — Coming Soon</title>
-  <meta name="description" content="Another Realm Compliance — Stay Compliant. Stay Current. Stay Operating.">
+  <meta name="description" content="Another Realm Compliance — Stay Current. Stay Compliant. Stay Operating.">
   <meta property="og:title" content="Another Realm Compliance — Coming Soon">
   <meta property="og:url" content="https://anotherrealmcompliance.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -252,8 +252,8 @@
   <p class="brand-dba">Compliance</p>
   <div class="gold-rule"></div>
   <p class="pillars">
-    <span class="p-desk">Stay Compliant &nbsp;◆&nbsp; Stay Current &nbsp;◆&nbsp; Stay Operating</span>
-    <span class="p-mob">◆&nbsp; Stay Compliant<br>◆&nbsp; Stay Current<br>◆&nbsp; Stay Operating</span>
+    <span class="p-desk">Stay Current &nbsp;◆&nbsp; Stay Compliant &nbsp;◆&nbsp; Stay Operating</span>
+    <span class="p-mob">◆&nbsp; Stay Current<br>◆&nbsp; Stay Compliant<br>◆&nbsp; Stay Operating</span>
   </p>
   <div class="activate-wrap">
     <button class="activate-btn" id="activateBtn" onclick="activateWarp()" data-label="Activate">Activate</button>
@@ -392,7 +392,7 @@ function activateWarp(){
   setTimeout(()=>{
     floatIcons.forEach(ic=>{ic.warping=false;ic.el.style.transform='scale(1)';ic.el.style.filter='none';ic.el.style.opacity='0.07';});
     document.getElementById('coreSphere').classList.remove('brightened');
-    setTimeout(()=>{btn.textContent='Activate';btn.classList.remove('warping');btn.disabled=false;activated=false;;},500);
+    setTimeout(()=>{btn.textContent='Activate';btn.classList.remove('warping');btn.disabled=false;activated=false;(function(){var a=document.createElement('a');a.href='mailto:info@anotherrealmcompliance.com';a.style.display='none';document.body.appendChild(a);a.click();setTimeout(()=>document.body.removeChild(a),100);})();},500);
   },4000);
 }
 
