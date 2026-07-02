@@ -1,0 +1,20 @@
+<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Another Realm Compliance">
+  <rect width="64" height="64" rx="10" fill="#FFFFFF"/>
+  <!-- grade line -->
+  <line x1="6" y1="22" x2="58" y2="22" stroke="#1E3A5F" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>
+  <!-- soil hatch ticks -->
+  <g stroke="#8A94A0" stroke-width="1.5" stroke-linecap="round">
+    <line x1="11" y1="25" x2="9" y2="28"/>
+    <line x1="21" y1="25" x2="19" y2="28"/>
+    <line x1="31" y1="25" x2="29" y2="28"/>
+    <line x1="41" y1="25" x2="39" y2="28"/>
+    <line x1="51" y1="25" x2="49" y2="28"/>
+  </g>
+  <!-- riser pipes -->
+  <line x1="22" y1="14" x2="22" y2="38" stroke="#1E3A5F" stroke-width="2.5" stroke-linecap="round"/>
+  <line x1="42" y1="14" x2="42" y2="38" stroke="#1E3A5F" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- buried tank cylinder -->
+  <rect x="10" y="36" width="44" height="20" rx="10" fill="#fff" stroke="#1E3A5F" stroke-width="2.5"/>
+  <!-- orange compliance check (signature) -->
+  <path d="M24 46 l5 5 l10 -11" stroke="#FF6B00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+</svg>

@@ -3,400 +3,334 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <meta name="theme-color" content="#0A0A0A">
-  <title>Another Realm Compliance — Coming Soon</title>
-  <meta name="description" content="Another Realm Compliance — Stay Current. Stay Compliant. Stay Operating.">
-  <meta property="og:title" content="Another Realm Compliance — Coming Soon">
-  <meta property="og:url" content="https://anotherrealmcompliance.com">
+  <meta name="theme-color" content="#1E3A5F">
+  <title>Another Realm Compliance — UST / AST Compliance Testing in Ohio</title>
+  <meta name="description" content="Third-party UST and AST compliance testing for Ohio fuel systems: tank tightness, line and leak-detector testing, annual inspections, release-detection verification.">
+  <meta property="og:title" content="Another Realm Compliance — UST / AST Compliance Testing in Ohio">
+  <meta property="og:description" content="Third-party UST and AST compliance testing for Ohio fuel systems: tank tightness, line and leak-detector testing, annual inspections, release-detection verification.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://anotherrealmcompliance.com/">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
-    :root { --gold:#D4AF37; --silver:#B8B8B8; --black:#0A0A0A; --white:#FAFAFA; --r3:#FF2400;--r4:#4169E1;--core:#4169E1; }
-    html { height:100%; -webkit-text-size-adjust:100%; }
+    :root {
+      --orange:#FF6B00;
+      --navy:#1E3A5F;
+      --steel:#8A94A0;
+      --white:#FFFFFF;
+      --ink:#20303f;
+      --line:#e3e7ec;
+    }
+    html { height:100%; -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
     body {
-      width:100%; min-height:100%; background:var(--black); color:var(--white); overflow-x:hidden; overflow-y:auto;
-      font-family:'Rajdhani',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+      width:100%; min-height:100%; background:var(--white); color:var(--ink); overflow-x:hidden;
+      font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
       -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
+      line-height:1.6;
     }
-    #starCanvas { position:fixed; inset:0; z-index:0; pointer-events:none; display:block; }
-    .scene {
-      position:relative; z-index:2;
-      display:flex; flex-direction:column; align-items:center; justify-content:center;
-      min-height:100dvh; min-height:100vh;
-      padding:2rem 1.5rem;
-      padding-top:max(2rem,env(safe-area-inset-top));
-      padding-bottom:max(5rem,env(safe-area-inset-bottom));
+    .wrap { width:100%; max-width:960px; margin:0 auto; padding:0 1.5rem; }
+
+    /* ── Grade-line divider motif ── */
+    .grade-divider {
+      width:100%; height:14px; margin:0; border:0; display:block; color:var(--navy);
     }
-    .cs-label {
-      font-size:clamp(13px,2.2vw,17px); font-weight:600; letter-spacing:.5em;
-      text-transform:uppercase; color:var(--silver); opacity:1;
-      margin-bottom:2rem; animation:fadeUp 1s .2s ease both;
+
+    /* ── Header lockup ── */
+    header.site-head { padding:2rem 0 .5rem; }
+    .lockup { display:flex; align-items:center; gap:1rem; }
+    .lockup .mark { width:64px; height:64px; flex-shrink:0; }
+    .lockup .mark svg { width:100%; height:100%; display:block; }
+    .wordmark { display:flex; flex-direction:column; line-height:1; }
+    .wm-1 {
+      font-family:'Rajdhani',sans-serif; font-weight:700; font-size:clamp(1.3rem,4.5vw,1.9rem);
+      color:var(--navy); letter-spacing:.06em; text-transform:uppercase;
     }
-    #orbitalWrap {
-      position:relative; width:220px; height:220px;
-      flex-shrink:0; margin-bottom:2.2rem;
-      animation:fadeUp 1s .4s ease both;
+    .wm-2 {
+      font-family:'Rajdhani',sans-serif; font-weight:600; font-size:clamp(.95rem,3.2vw,1.35rem);
+      color:var(--orange); letter-spacing:.28em; text-transform:uppercase; margin-top:.1rem;
     }
-    .ring-mover { position:absolute; top:50%; left:50%; width:0; height:0; }
-    .ring { position:absolute; border-radius:50%; border-style:solid; }
-    .ring-1 {
-      width:200px; height:80px; top:-40px; left:-100px;
-      border-width:3.5px; border-color:var(--gold);
-      box-shadow:0 0 10px 3px rgba(212,175,55,.6), 0 0 24px 8px rgba(212,175,55,.2);
-      transform:rotate(-20deg);
-      animation:ringPulse1 3.5s ease-in-out infinite;
-      animation:glowGold 2.8s ease-in-out infinite;
+    .wm-rule { width:100%; max-width:280px; height:3px; background:var(--orange); margin:.4rem 0; border-radius:2px; }
+    .wm-3 {
+      font-family:'Rajdhani',sans-serif; font-weight:500; font-size:clamp(.6rem,2vw,.72rem);
+      color:var(--steel); letter-spacing:.22em; text-transform:uppercase;
     }
-    .ring-2 {
-      width:165px; height:66px; top:-33px; left:-82.5px;
-      border-width:2.5px; border-color:var(--silver);
-      box-shadow:0 0 6px 1px rgba(184,184,184,.4);
-      transform:rotate(30deg);
-      animation:ringPulse2 4.2s ease-in-out 0.8s infinite;
-      animation:glowSilver 3.5s ease-in-out infinite;
+
+    /* ── Hero ── */
+    .hero { padding:2.5rem 0 2.5rem; }
+    .hero h1 {
+      font-family:'Rajdhani',sans-serif; font-weight:700; color:var(--navy);
+      font-size:clamp(2.2rem,7vw,3.6rem); line-height:1.05; letter-spacing:.01em;
+      text-transform:uppercase; margin-bottom:1rem;
     }
-    .ring-3 {
-      width:124px; height:50px; top:-25px; left:-62px;
-      border-width:2px; border-color:#FF2400;
-      box-shadow:0 0 8px 2px rgba(255,36,0,.5);
-      transform:rotate(-10deg);
-      animation:ringPulse3 2.8s ease-in-out 1.4s infinite;
-      animation:glowRed 2.1s ease-in-out infinite;
-    }
-    .ring-4 {
-      width:100px; height:40px; top:-20px; left:-50px;
-      border-width:1.8px; border-color:#4169E1;
-      box-shadow:0 0 8px 2px rgba(65,105,225,.5);
-      transform:rotate(15deg);
-      animation:ringPulse4 3.2s ease-in-out 0.5s infinite;
-      animation:glowBlue 3.1s ease-in-out infinite;
-    }
-    .core-sphere {
-      position:absolute; top:50%; left:50%;
-      width:45px; height:45px; margin:-22.5px 0 0 -22.5px; border-radius:50%;
-      background:radial-gradient(circle at 32% 28%,rgba(65,105,225,.95) 0%,rgba(65,105,225,.48) 42%,rgba(65,105,225,.05) 100%);
-      box-shadow:0 0 18px 6px rgba(65,105,225,.55),0 0 50px 20px rgba(65,105,225,.18);
-      transition:box-shadow .7s ease; z-index:10;
-    }
-    .core-sphere.brightened {box-shadow:0 0 28px 12px rgba(65,105,225,.9),0 0 80px 35px rgba(65,105,225,.4);}
-    .brand-another {
-      font-size:clamp(2.2rem,5.5vw,3.8rem); font-weight:700; letter-spacing:.22em; text-transform:uppercase;
-      background:linear-gradient(135deg,var(--gold) 0%,#f5dc6e 35%,var(--gold) 55%,#9a7018 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      background-size:250% 250%; line-height:1; margin-bottom:.3rem;
-      animation:fadeUp 1s .6s ease both, shimmer 4s 1.5s linear infinite;
-    }
-    .brand-dba {
-      font-size:clamp(1.1rem,2.8vw,1.6rem); font-weight:600; letter-spacing:.35em; text-transform:uppercase;
-      background:linear-gradient(135deg,var(--white) 0%,var(--silver) 35%,var(--white) 55%,#888 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      background-size:250% 250%; line-height:1; margin-bottom:1.4rem;
-      animation:fadeUp 1s .7s ease both, shimmer 5s 2s linear infinite;
-    }
-    .gold-rule {
-      width:180px; height:1px;
-      background:linear-gradient(90deg,transparent,var(--gold),transparent);
-      margin-bottom:1.2rem; animation:fadeUp 1s .9s ease both;
+    .hero .subline {
+      font-size:clamp(1rem,2.6vw,1.25rem); color:var(--ink); max-width:640px; margin-bottom:1.4rem;
     }
     .pillars {
-      font-family:'Cormorant Garamond',Georgia,serif; font-weight:700;
-      font-size:clamp(.78rem,2vw,1rem); letter-spacing:.15em; text-transform:uppercase;
-      background:linear-gradient(135deg,var(--gold) 0%,#f5dc6e 35%,var(--gold) 60%,#c09020 100%);
-      -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
-      background-size:250% 250%; margin-bottom:2rem; text-align:center;
-      animation:fadeUp 1s 1s ease both, shimmer 6s 2.5s linear infinite;
-      line-height:2;
+      font-family:'Rajdhani',sans-serif; font-weight:600; text-transform:uppercase;
+      letter-spacing:.12em; color:var(--navy); font-size:clamp(.85rem,2.4vw,1.05rem);
     }
-    .p-mob { display:none; }
-    .p-desk { display:inline; }
-    @media(max-width:500px){
-      .p-mob { display:block; text-align:center; line-height:1.8; }
-      .p-desk { display:none; }
-      .pillars { font-size:clamp(.7rem,3.2vw,.85rem); letter-spacing:.06em; }
-      .success-msg { font-size:.9rem; letter-spacing:.03em; white-space:normal; overflow:visible; line-height:1.5; }
-      .input-row button { padding:.85rem .9rem; font-size:.72rem; letter-spacing:.1em; }
+    .pillars .diamond { color:var(--orange); padding:0 .5em; }
+
+    /* ── Section shells ── */
+    section { padding:2.8rem 0; }
+    .eyebrow {
+      font-family:'Rajdhani',sans-serif; font-weight:600; text-transform:uppercase;
+      letter-spacing:.24em; color:var(--orange); font-size:.8rem; margin-bottom:1.1rem;
     }
-    .activate-wrap { margin-bottom:1.6rem; position:relative; animation:fadeUp 1s 1.1s ease both; }
-    .activate-btn {
-      min-height:44px; padding:.65rem 2.4rem; background:transparent;
-      border:1px solid rgba(65,105,225,.45); color:#4169E1;
-      font-family:'Rajdhani',sans-serif; font-size:.75rem; font-weight:600;
-      letter-spacing:.28em; text-transform:uppercase; cursor:pointer; border-radius:2px;
-      transition:border-color .2s,box-shadow .2s,background .2s; -webkit-tap-highlight-color:transparent;
+    .sec-title {
+      font-family:'Rajdhani',sans-serif; font-weight:700; text-transform:uppercase;
+      color:var(--navy); font-size:clamp(1.5rem,4vw,2.1rem); letter-spacing:.02em; margin-bottom:1.4rem;
     }
-    .activate-btn:hover { border-color:#4169E1; box-shadow: 0 0 16px rgba(65,105,225,.35); }
-    .activate-btn.warping {
-      border-color:#4169E1; background:rgba(255,36,0,.06);
-      box-shadow: 0 0 24px rgba(65,105,225,.7),0 0 60px rgba(65,105,225,.2);
+
+    /* ── What we do grid ── */
+    .services {
+      list-style:none; display:grid; grid-template-columns:repeat(2,1fr); gap:.9rem;
     }
-    .ripple {position:absolute;top:50%;left:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:1.5px solid #4169E1;pointer-events:none;opacity:0; pointer-events:none; opacity:0;
+    .services li {
+      border:1px solid var(--line); border-left:3px solid var(--orange);
+      border-radius:4px; padding:1rem 1.1rem; background:#fbfcfd;
+      display:flex; align-items:flex-start; gap:.65rem;
+      font-weight:500; color:var(--navy);
     }
-    .ripple.active { animation:rippleOut 1s ease-out forwards; }
-    @keyframes rippleOut { 0%{transform:scale(1);opacity:.8;} 100%{transform:scale(32);opacity:0;} }
-    .form-wrap { width:100%; max-width:420px; animation:fadeUp 1s 1.2s ease both; }
+    .services li .tick { color:var(--orange); font-weight:700; flex-shrink:0; }
+
+    /* ── Waitlist ── */
+    .waitlist { background:#f7f9fb; border:1px solid var(--line); border-radius:8px; padding:1.8rem; }
+    .waitlist p.lead { font-size:1.05rem; color:var(--ink); margin-bottom:1.2rem; max-width:520px; }
+    .form-wrap { width:100%; max-width:480px; }
     .form-label {
-      display:block; text-align:center;
-      font-size:clamp(.75rem,1.8vw,.9rem); letter-spacing:.22em; text-transform:uppercase;
-      color:var(--silver); opacity:.88; margin-bottom:.75rem;
+      display:block; font-family:'Rajdhani',sans-serif; font-weight:600;
+      font-size:.85rem; letter-spacing:.18em; text-transform:uppercase;
+      color:var(--navy); margin-bottom:.65rem;
     }
     .input-row {
-      display:flex; border-radius:3px; border:1px solid rgba(212,175,55,.4);
-      overflow:hidden; background:rgba(255,255,255,.025); transition:border-color .2s,box-shadow .2s;
+      display:flex; border-radius:5px; border:1.5px solid var(--line);
+      overflow:hidden; background:var(--white); transition:border-color .2s,box-shadow .2s;
     }
-    .input-row:focus-within { border-color:rgba(212,175,55,.85); box-shadow:0 0 0 3px rgba(212,175,55,.12); }
+    .input-row:focus-within { border-color:var(--navy); box-shadow:0 0 0 3px rgba(30,58,95,.14); }
     .input-row input[type="email"] {
-      flex:1; min-height:48px; padding:.85rem 1.1rem;
-      background:transparent; border:none; outline:none; color:var(--white);
-      font-family:'Rajdhani',sans-serif; font-size:1rem;
+      flex:1; min-width:0; min-height:50px; padding:.9rem 1.1rem;
+      background:transparent; border:none; outline:none; color:var(--ink);
+      font-family:'Inter',sans-serif; font-size:1rem;
     }
-    .input-row input::placeholder { color:rgba(250,250,250,.3); }
+    .input-row input::placeholder { color:var(--steel); }
     .input-row button {
-      min-height:48px; padding:.85rem 1.4rem; background:transparent;
-      border:none; border-left:1px solid rgba(212,175,55,.4); color:var(--gold); cursor:pointer;
-      font-family:'Rajdhani',sans-serif; font-size:.78rem; font-weight:700;
-      letter-spacing:.16em; text-transform:uppercase;
-      transition:background .2s,color .2s,box-shadow .2s; -webkit-tap-highlight-color:transparent;
+      min-height:50px; padding:.9rem 1.6rem; background:var(--orange);
+      border:none; color:#fff; cursor:pointer;
+      font-family:'Rajdhani',sans-serif; font-size:.9rem; font-weight:700;
+      letter-spacing:.12em; text-transform:uppercase;
+      transition:background .2s,box-shadow .2s; -webkit-tap-highlight-color:transparent;
     }
-    .input-row button:hover { background:var(--gold); color:var(--black); box-shadow:0 0 18px 4px rgba(212,175,55,.5); }
+    .input-row button:hover { background:#e35f00; box-shadow:0 4px 14px rgba(255,107,0,.35); }
+    .input-row button:disabled { opacity:.7; cursor:default; }
     .success-msg {
-      display:none; text-align:center; padding:.9rem;
-      font-family:'Cormorant Garamond',Georgia,serif; font-style:italic;
-      color:var(--gold); font-size:1.05rem; letter-spacing:.08em;
+      display:none; padding:.9rem 0; font-family:'Rajdhani',sans-serif; font-weight:600;
+      color:var(--navy); font-size:1.15rem; letter-spacing:.04em;
     }
-    .error-msg { display:none; text-align:center; padding:.45rem; color:#ff7070; font-size:.82rem; }
+    .success-msg .star { color:var(--orange); }
+    .error-msg { display:none; padding:.5rem 0; color:#c0392b; font-size:.85rem; }
     .privacy-note {
-      margin-top:.7rem; text-align:center;
-      font-size:clamp(.75rem,1.8vw,.85rem); color:rgba(250,250,250,.62);
-      letter-spacing:.06em; font-family:'DM Mono','Courier New',monospace;
+      margin-top:.8rem; font-size:.8rem; color:var(--steel); letter-spacing:.04em;
     }
-    .contact-email {
-      margin-top:1.2rem; font-family:'DM Mono','Courier New',monospace;
-      font-size:clamp(.82rem,2vw,1rem); color:var(--silver); opacity:.8;
-      letter-spacing:.08em; animation:fadeUp 1s 1.3s ease both;
+
+    /* ── Contact ── */
+    .contact-grid { display:flex; flex-wrap:wrap; gap:1rem 2.4rem; }
+    .contact-grid .item { display:flex; flex-direction:column; }
+    .contact-grid .k {
+      font-family:'Rajdhani',sans-serif; font-weight:600; font-size:.72rem;
+      letter-spacing:.2em; text-transform:uppercase; color:var(--steel); margin-bottom:.2rem;
     }
-    #iconLayer { position:fixed; inset:0; z-index:1; pointer-events:none; overflow:hidden; }
-    .float-icon { position:absolute; width:36px; height:36px; opacity:0.08; pointer-events:none; }
-    .float-icon svg { width:100%; height:100%; }
-    .site-footer {
-      position:fixed; bottom:0; left:0; right:0;
-      padding:.6rem 1rem max(.9rem,env(safe-area-inset-bottom));
-      text-align:center; font-size:.6rem; letter-spacing:.16em; text-transform:uppercase;
-      color:rgba(250,250,250,.18); font-family:'Rajdhani',sans-serif;
+    .contact-grid a, .contact-grid .v { color:var(--navy); font-weight:600; font-size:1.1rem; text-decoration:none; }
+    .contact-grid a:hover { color:var(--orange); }
+
+    /* ── Footer navy band ── */
+    footer.site-footer {
+      background:var(--navy); color:#cdd6e0; margin-top:1rem;
+      padding:2rem 0 2.4rem;
     }
-    @keyframes fadeUp { from{opacity:0;transform:translateY(14px);} to{opacity:1;transform:translateY(0);} }
-    @keyframes shimmer { 0%{background-position:250% center;} 100%{background-position:-250% center;} }
-    @keyframes ringPulse1 {
-      0%,100%{box-shadow:0 0 10px 3px rgba(212,175,55,.6),0 0 24px 8px rgba(212,175,55,.2);}
-      50%{box-shadow:0 0 18px 6px rgba(212,175,55,.95),0 0 40px 16px rgba(212,175,55,.45);}
+    footer.site-footer .wrap { display:flex; flex-direction:column; gap:.5rem; }
+    footer.site-footer .f-title {
+      font-family:'Rajdhani',sans-serif; font-weight:700; text-transform:uppercase;
+      letter-spacing:.08em; color:#fff; font-size:1rem;
     }
-    @keyframes ringPulse2 {
-      0%,100%{box-shadow:0 0 6px 1px rgba(184,184,184,.4);}
-      50%{box-shadow:0 0 14px 4px rgba(184,184,184,.85),0 0 28px 10px rgba(184,184,184,.28);}
+    footer.site-footer .f-sub {
+      font-family:'Rajdhani',sans-serif; font-weight:500; text-transform:uppercase;
+      letter-spacing:.16em; color:var(--orange); font-size:.72rem;
     }
-    @keyframes ringPulse3 {
-      0%,100%{box-shadow:0 0 8px 2px rgba(255,36,0,.5);}
-      50%{box-shadow:0 0 16px 5px rgba(255,36,0,.92),0 0 32px 12px rgba(255,36,0,.35);}
-    }
-    @keyframes ringPulse4 {
-      0%,100%{box-shadow:0 0 6px 1px rgba(65,105,225,.38);}
-      50%{box-shadow:0 0 14px 4px rgba(65,105,225,.78),0 0 26px 10px rgba(65,105,225,.28);}
-    }
-    @keyframes glowGold { 0%,100%{box-shadow:0 0 10px 3px rgba(212,175,55,.55),0 0 24px 8px rgba(212,175,55,.18);} 50%{box-shadow:0 0 18px 7px rgba(212,175,55,.9),0 0 40px 16px rgba(212,175,55,.35);} }
-    @keyframes glowSilver { 0%,100%{box-shadow:0 0 6px 1px rgba(184,184,184,.35);} 50%{box-shadow:0 0 14px 5px rgba(184,184,184,.75),0 0 28px 10px rgba(184,184,184,.2);} }
-    @keyframes glowRed { 0%,100%{box-shadow:0 0 8px 2px rgba(255,36,0,.45);} 50%{box-shadow:0 0 20px 8px rgba(255,36,0,.9),0 0 40px 14px rgba(255,36,0,.25);} }
-    @keyframes glowBlue { 0%,100%{box-shadow:0 0 8px 2px rgba(65,105,225,.45);} 50%{box-shadow:0 0 20px 8px rgba(65,105,225,.9),0 0 40px 14px rgba(65,105,225,.25);} }
-    @media(max-height:720px){
-      .cs-label{margin-bottom:1rem;}
-      #orbitalWrap{width:170px;height:170px;margin-bottom:1.2rem;}
-      .ring-1{width:155px;height:62px;top:-31px;left:-77.5px;}
-      .ring-2{width:128px;height:51px;top:-25.5px;left:-64px;}
-      .ring-3{width:96px;height:39px;top:-19.5px;left:-48px;}
-      .ring-4{width:77px;height:31px;top:-15.5px;left:-38.5px;}
-      .core-sphere{width:35px;height:35px;margin:-17.5px 0 0 -17.5px;}
-      .brand-another{font-size:clamp(1.8rem,4.5vw,2.8rem);}
-      .activate-wrap{margin-bottom:1rem;}
-    }
-    @media(max-width:500px){
-      #orbitalWrap{width:170px;height:170px;margin-bottom:1.4rem;}
-      .ring-1{width:155px;height:62px;top:-31px;left:-77.5px;}
-      .ring-2{width:128px;height:51px;top:-25.5px;left:-64px;}
-      .ring-3{width:96px;height:39px;top:-19.5px;left:-48px;}
-      .ring-4{width:77px;height:31px;top:-15.5px;left:-38.5px;}
-      .core-sphere{width:35px;height:35px;margin:-17.5px 0 0 -17.5px;}
-      .brand-another{font-size:clamp(1.8rem,5vw,2.6rem);}
-      .pillars{font-size:clamp(.72rem,3.5vw,.88rem);}
-      .form-wrap{max-width:100%;}
+    footer.site-footer .f-legal { font-size:.82rem; color:#9fb0c2; max-width:640px; }
+
+    @media(max-width:560px){
+      .services { grid-template-columns:1fr; }
+      .lockup .mark { width:54px; height:54px; }
+      .waitlist { padding:1.3rem; }
+      .input-row { flex-direction:column; }
+      .input-row button { width:100%; }
     }
   </style>
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="512x512" href="/favicon-512.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="/favicon-180.png">
-  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 </head>
 <body>
-<canvas id="starCanvas"></canvas>
-<div id="iconLayer"></div>
-<main class="scene">
-  <p class="cs-label">Coming Soon</p>
-  <div id="orbitalWrap">
-    <div class="ring-mover" id="m1"><div class="ring ring-1" id="ring1"></div></div>
-    <div class="ring-mover" id="m2"><div class="ring ring-2" id="ring2"></div></div>
-    <div class="ring-mover" id="m3"><div class="ring ring-3" id="ring3"></div></div>
-    <div class="ring-mover" id="m4"><div class="ring ring-4" id="ring4"></div></div>
-    <div class="core-sphere" id="coreSphere"></div>
-  </div>
-  <p class="brand-another">Another Realm</p>
-  <p class="brand-dba">Compliance</p>
-  <div class="gold-rule"></div>
-  <p class="pillars">
-    <span class="p-desk">Stay Current &nbsp;◆&nbsp; Stay Compliant &nbsp;◆&nbsp; Stay Operating</span>
-    <span class="p-mob">◆&nbsp; Stay Current<br>◆&nbsp; Stay Compliant<br>◆&nbsp; Stay Operating</span>
-  </p>
-  <div class="activate-wrap">
-    <button class="activate-btn" id="activateBtn" onclick="activateWarp()" data-label="Activate">Activate</button>
-    <div class="ripple" id="ripple1"></div>
-    <div class="ripple" id="ripple2"></div>
-    <div class="ripple" id="ripple3"></div>
-  </div>
-  <div class="form-wrap">
-    <label class="form-label">Get Early Access</label>
-    <div class="input-row" id="inputRow">
-      <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email" inputmode="email">
-      <input type="text" name="_hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
-      <button onclick="submitEmail()">Notify Me</button>
+
+<header class="site-head">
+  <div class="wrap">
+    <div class="lockup">
+      <div class="mark" aria-hidden="true">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Another Realm Compliance buried tank mark">
+          <!-- grade line -->
+          <line x1="4" y1="22" x2="60" y2="22" stroke="#1E3A5F" stroke-width="2" stroke-dasharray="4 3" stroke-linecap="round"/>
+          <!-- soil hatch ticks -->
+          <g stroke="#8A94A0" stroke-width="1.5" stroke-linecap="round">
+            <line x1="9" y1="25" x2="7" y2="28"/>
+            <line x1="19" y1="25" x2="17" y2="28"/>
+            <line x1="29" y1="25" x2="27" y2="28"/>
+            <line x1="39" y1="25" x2="37" y2="28"/>
+            <line x1="49" y1="25" x2="47" y2="28"/>
+            <line x1="57" y1="25" x2="55" y2="28"/>
+          </g>
+          <!-- riser pipes -->
+          <line x1="22" y1="13" x2="22" y2="38" stroke="#1E3A5F" stroke-width="2.5" stroke-linecap="round"/>
+          <line x1="42" y1="13" x2="42" y2="38" stroke="#1E3A5F" stroke-width="2.5" stroke-linecap="round"/>
+          <!-- buried tank cylinder -->
+          <rect x="9" y="36" width="46" height="21" rx="10.5" fill="#fff" stroke="#1E3A5F" stroke-width="2.5"/>
+          <!-- orange compliance check (signature) -->
+          <path d="M23 46.5 l5 5 l11 -12" stroke="#FF6B00" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        </svg>
+      </div>
+      <div class="wordmark">
+        <span class="wm-1">Another Realm</span>
+        <span class="wm-2">Compliance</span>
+        <span class="wm-rule"></span>
+        <span class="wm-3">UST / AST Compliance Testing</span>
+      </div>
     </div>
-    <div class="success-msg" id="successMsg">&#10022;&nbsp; You're on the list.</div>
-    <div class="error-msg" id="errorMsg"></div>
-    <p class="privacy-note">No spam &nbsp;·&nbsp; Unsubscribe anytime</p>
   </div>
-  <p class="contact-email"><a href="mailto:info@anotherrealmcompliance.com" style="color:inherit;text-decoration:none;">info@anotherrealmcompliance.com</a></p>
+</header>
+
+<svg class="grade-divider" viewBox="0 0 960 14" preserveAspectRatio="none" aria-hidden="true">
+  <line x1="0" y1="4" x2="960" y2="4" stroke="#1E3A5F" stroke-width="1.5" stroke-dasharray="6 5"/>
+  <g stroke="#8A94A0" stroke-width="1.2" stroke-linecap="round">
+    <line x1="60" y1="7" x2="55" y2="12"/>
+    <line x1="220" y1="7" x2="215" y2="12"/>
+    <line x1="380" y1="7" x2="375" y2="12"/>
+    <line x1="540" y1="7" x2="535" y2="12"/>
+    <line x1="700" y1="7" x2="695" y2="12"/>
+    <line x1="860" y1="7" x2="855" y2="12"/>
+  </g>
+</svg>
+
+<main>
+  <section class="hero">
+    <div class="wrap">
+      <h1>UST / AST Compliance Testing</h1>
+      <p class="subline">Third-party physical testing for underground and aboveground storage tank systems — Ohio.</p>
+      <p class="pillars">Stay Current<span class="diamond">&#9670;</span>Stay Compliant<span class="diamond">&#9670;</span>Stay Operating</p>
+    </div>
+  </section>
+
+  <svg class="grade-divider" viewBox="0 0 960 14" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="4" x2="960" y2="4" stroke="#1E3A5F" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <g stroke="#8A94A0" stroke-width="1.2" stroke-linecap="round">
+      <line x1="60" y1="7" x2="55" y2="12"/>
+      <line x1="220" y1="7" x2="215" y2="12"/>
+      <line x1="380" y1="7" x2="375" y2="12"/>
+      <line x1="540" y1="7" x2="535" y2="12"/>
+      <line x1="700" y1="7" x2="695" y2="12"/>
+      <line x1="860" y1="7" x2="855" y2="12"/>
+    </g>
+  </svg>
+
+  <section class="what-we-do">
+    <div class="wrap">
+      <p class="eyebrow">What We Do</p>
+      <h2 class="sec-title">Physical Compliance Testing</h2>
+      <ul class="services">
+        <li><span class="tick">&#9670;</span>Line &amp; leak-detector testing</li>
+        <li><span class="tick">&#9670;</span>Tank tightness testing</li>
+        <li><span class="tick">&#9670;</span>Annual UST inspections</li>
+        <li><span class="tick">&#9670;</span>Release-detection verification</li>
+        <li><span class="tick">&#9670;</span>Secondary containment testing</li>
+        <li><span class="tick">&#9670;</span>Spill bucket testing</li>
+      </ul>
+    </div>
+  </section>
+
+  <svg class="grade-divider" viewBox="0 0 960 14" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="4" x2="960" y2="4" stroke="#1E3A5F" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <g stroke="#8A94A0" stroke-width="1.2" stroke-linecap="round">
+      <line x1="60" y1="7" x2="55" y2="12"/>
+      <line x1="220" y1="7" x2="215" y2="12"/>
+      <line x1="380" y1="7" x2="375" y2="12"/>
+      <line x1="540" y1="7" x2="535" y2="12"/>
+      <line x1="700" y1="7" x2="695" y2="12"/>
+      <line x1="860" y1="7" x2="855" y2="12"/>
+    </g>
+  </svg>
+
+  <section class="coming-soon">
+    <div class="wrap">
+      <p class="eyebrow">Coming Soon</p>
+      <div class="waitlist">
+        <p class="lead">Full site launching soon — get early access.</p>
+        <div class="form-wrap">
+          <label class="form-label" for="emailInput">Get Early Access</label>
+          <div class="input-row" id="inputRow">
+            <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email" inputmode="email">
+            <input type="text" name="_hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
+            <button onclick="submitEmail()">Notify Me</button>
+          </div>
+          <div class="success-msg" id="successMsg"><span class="star">&#10022;</span>&nbsp; You're on the list.</div>
+          <div class="error-msg" id="errorMsg"></div>
+          <p class="privacy-note">No spam &nbsp;&middot;&nbsp; Unsubscribe anytime</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <svg class="grade-divider" viewBox="0 0 960 14" preserveAspectRatio="none" aria-hidden="true">
+    <line x1="0" y1="4" x2="960" y2="4" stroke="#1E3A5F" stroke-width="1.5" stroke-dasharray="6 5"/>
+    <g stroke="#8A94A0" stroke-width="1.2" stroke-linecap="round">
+      <line x1="60" y1="7" x2="55" y2="12"/>
+      <line x1="220" y1="7" x2="215" y2="12"/>
+      <line x1="380" y1="7" x2="375" y2="12"/>
+      <line x1="540" y1="7" x2="535" y2="12"/>
+      <line x1="700" y1="7" x2="695" y2="12"/>
+      <line x1="860" y1="7" x2="855" y2="12"/>
+    </g>
+  </svg>
+
+  <section class="contact">
+    <div class="wrap">
+      <p class="eyebrow">Contact</p>
+      <div class="contact-grid">
+        <div class="item">
+          <span class="k">Phone</span>
+          <a href="tel:+13802612398">(380) 261-2398</a>
+        </div>
+        <div class="item">
+          <span class="k">Email</span>
+          <a href="mailto:info@anotherrealmcompliance.com">info@anotherrealmcompliance.com</a>
+        </div>
+        <div class="item">
+          <span class="k">Location</span>
+          <span class="v">Columbus, Ohio</span>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
-<footer class="site-footer">&copy; 2026 Another Realm Compliance &nbsp;|&nbsp; anotherrealmcompliance.com</footer>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <span class="f-title">&copy; 2026 Another Realm Compliance</span>
+    <span class="f-sub">UST / AST Compliance Testing</span>
+    <span class="f-legal">Another Realm Compliance is a DBA of CBUS Express Transport Limited LLC — Columbus, Ohio.</span>
+  </div>
+</footer>
+
 <script>
-/* ── Star field — passive twinkling background ── */
-const canvas=document.getElementById('starCanvas'),ctx=canvas.getContext('2d');
-let S=[];
-function resize(){canvas.width=innerWidth;canvas.height=innerHeight;}
-function initStars(){S=[];for(let i=0;i<200;i++)S.push({x:Math.random()*canvas.width,y:Math.random()*canvas.height,r:Math.random()*1.4+0.2,b:Math.random()*0.5+0.1,ph:Math.random()*Math.PI*2,sp:0.4+Math.random()*1.2});}
-function drawStars(t){ctx.clearRect(0,0,canvas.width,canvas.height);S.forEach(s=>{const a=s.b+(1-s.b)*0.5*(1+Math.sin(s.ph+t*s.sp*0.001));ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,6.283);ctx.fillStyle=`rgba(255,255,255,${a})`;ctx.fill();s.ph+=0.006;});requestAnimationFrame(drawStars);}
-resize();initStars();requestAnimationFrame(drawStars);
-window.addEventListener('resize',()=>{resize();initStars();});
-
-/* ── Icon Definitions ── */
-const ICON_DEFS=[
-  {litColor:'#FF2400',count:4,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>'},
-  {litColor:'#D4AF37',count:4,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>'},
-  {litColor:'#4169E1',count:3,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>'},
-  {litColor:'#FF2400',count:3,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>'},
-  {litColor:'#D4AF37',count:3,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'},
-  {litColor:'#4169E1',count:3,svg:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/><path d="M3 22h12"/><path d="M7 6v4h4V6"/><path d="M15 6h1a2 2 0 0 1 2 2v3a1 1 0 0 0 1 1v0a1 1 0 0 0 1-1V8l-3-3"/><path d="M19 12v6a1 1 0 0 1-1 1h0a1 1 0 0 1-1-1v-5h-2"/></svg>'}
-];
-
-/* ── Floating ambient icons ── */
-const iconLayer=document.getElementById('iconLayer');
-const floatIcons=[];
-(function(){
-  ICON_DEFS.forEach(def=>{
-    for(let i=0;i<def.count;i++){
-      const el=document.createElement('div');
-      el.className='float-icon';el.innerHTML=def.svg;
-      el.style.color=def.litColor;
-      const obj={el,x:Math.random()*innerWidth,y:Math.random()*innerHeight,
-        vx:((Math.random()-.5)*1.0)||(0.3),vy:((Math.random()-.5)*1.0)||(0.3),
-        ph:Math.random()*Math.PI*2,color:def.litColor,warping:false};
-      el.style.left=obj.x+'px';el.style.top=obj.y+'px';
-      iconLayer.appendChild(el);floatIcons.push(obj);
-    }
-  });
-  function tick(t){
-    floatIcons.forEach(ic=>{
-      if(!ic.warping){
-        ic.x+=ic.vx;ic.y+=ic.vy;
-        if(ic.x<-40)ic.x=innerWidth+20;if(ic.x>innerWidth+40)ic.x=-20;
-        if(ic.y<-40)ic.y=innerHeight+20;if(ic.y>innerHeight+40)ic.y=-20;
-        ic.el.style.left=ic.x+'px';ic.el.style.top=ic.y+'px';
-        ic.el.style.opacity=0.07+0.04*Math.sin(ic.ph+t*0.0005);
-        ic.el.style.transform='scale(1)';
-        ic.el.style.filter='none';
-      } else {
-        const cx=innerWidth/2,cy=innerHeight/2;
-        const dx=ic.x-cx,dy=ic.y-cy;
-        const dist=Math.sqrt(dx*dx+dy*dy)||1;
-        const speed=ic.warpSpd*(1+dist/400);
-        ic.x+=ic.wvx*speed;ic.y+=ic.wvy*speed;
-        const sc=Math.max(0.5,Math.min(2.5,dist/100));
-        ic.el.style.transform=`scale(${sc})`;
-        ic.el.style.opacity=String(Math.min(0.85,dist/150));
-        ic.el.style.left=ic.x+'px';ic.el.style.top=ic.y+'px';
-        ic.el.style.filter=`drop-shadow(0 0 ${4*sc}px ${ic.color})`;
-        if(ic.x<-80||ic.x>innerWidth+80||ic.y<-80||ic.y>innerHeight+80)resetWarpIcon(ic);
-      }
-      ic.ph+=0.006;
-    });
-    requestAnimationFrame(tick);
-  }
-  requestAnimationFrame(tick);
-})();
-
-function resetWarpIcon(ic){
-  const cx=innerWidth/2,cy=innerHeight/2;
-  const angle=Math.random()*Math.PI*2;
-  const r=Math.random()*20+5;
-  ic.x=cx+Math.cos(angle)*r;ic.y=cy+Math.sin(angle)*r;
-  ic.wvx=Math.cos(angle);ic.wvy=Math.sin(angle);
-  ic.warpSpd=0.8+Math.random()*1.2;
-  ic.el.style.left=ic.x+'px';ic.el.style.top=ic.y+'px';
-}
-window.addEventListener('resize',()=>floatIcons.forEach(ic=>{
-  if(ic.x>innerWidth)ic.x=Math.random()*innerWidth;
-  if(ic.y>innerHeight)ic.y=Math.random()*innerHeight;
-}));
-
-/* ── Orbital ── */
-const movers=['m1','m2','m3','m4'].map(id=>document.getElementById(id));
-const coreEl=document.getElementById('coreSphere');
-const PATHS=[
-  [{tx:'0px',ty:'0px'},{tx:'calc(40vw - 110px)',ty:'calc(-22vh + 36px)'},{tx:'calc(40vw - 110px)',ty:'calc(22vh - 36px)'},{tx:'calc(-40vw + 110px)',ty:'calc(22vh - 36px)'},{tx:'calc(-40vw + 110px)',ty:'calc(-22vh + 36px)'}],
-  [{tx:'0px',ty:'0px'},{tx:'calc(-38vw + 95px)',ty:'calc(-20vh + 32px)'},{tx:'calc(-38vw + 95px)',ty:'calc(20vh - 32px)'},{tx:'calc(38vw - 95px)',ty:'calc(20vh - 32px)'},{tx:'calc(38vw - 95px)',ty:'calc(-20vh + 32px)'}],
-  [{tx:'0px',ty:'0px'},{tx:'0px',ty:'calc(-20vh + 28px)'},{tx:'calc(35vw - 70px)',ty:'0px'},{tx:'0px',ty:'calc(18vh - 28px)'},{tx:'calc(-35vw + 70px)',ty:'0px'}],
-  [{tx:'0px',ty:'0px'},{tx:'0px',ty:'calc(16vh - 23px)'},{tx:'calc(-32vw + 60px)',ty:'0px'},{tx:'0px',ty:'calc(-18vh + 23px)'},{tx:'calc(32vw - 60px)',ty:'0px'}],
-];
-const ks=document.createElement('style');document.head.appendChild(ks);
-function iKF(n,p){const f=p.map((pt,i)=>`${[0,25,50,75,100][i]}%{transform:translate(${pt.tx},${pt.ty});opacity:${i===0?1:0.45};}`).join(' ');try{ks.sheet.insertRule(`@keyframes ${n}{${f}}`,ks.sheet.cssRules.length);}catch(e){}}
-function iRK(n,e){try{ks.sheet.insertRule(`@keyframes ${n}{0%{transform:translate(${e.tx},${e.ty});opacity:0.45;}100%{transform:translate(0px,0px);opacity:1;}}`,ks.sheet.cssRules.length);}catch(e){}}
-PATHS.forEach((p,i)=>{iKF(`orbit${i+1}`,p);iRK(`ret${i+1}`,p[4]);});
-let cyc=false;
-function cycle(){
-  if(cyc)return;cyc=true;
-  setTimeout(()=>movers.forEach((m,i)=>{m.style.transition='none';m.style.animation=`orbit${i+1} 8s linear forwards`;}),1500);
-  const rb=9500;
-  [3,2,1,0].forEach((mi,step)=>setTimeout(()=>{movers[mi].style.animation=`ret${mi+1} 1800ms cubic-bezier(0.25,0.1,0.25,1) forwards`;if(mi===2)coreEl.classList.add('brightened');},rb+step*600));
-  setTimeout(()=>{movers.forEach(m=>{m.style.animation='none';m.style.transition='opacity .5s';m.style.opacity='1';m.style.transform='translate(0px,0px)';});coreEl.classList.remove('brightened');cyc=false;setTimeout(cycle,5000);},rb+3*600+2000+200);
-}
-setTimeout(cycle,1000);
-
-/* ── Activate — icons fly toward user ── */
-let activated=false;
-function activateWarp(){
-  if(activated)return;activated=true;
-  ['ripple1','ripple2','ripple3'].forEach((id,i)=>setTimeout(()=>{
-    const r=document.getElementById(id);r.classList.remove('active');void r.offsetWidth;r.classList.add('active');
-  },i*200));
-  const btn=document.getElementById('activateBtn');
-  btn.disabled=true;btn.classList.add('warping');
-  btn.textContent='Activated ✦';
-  document.getElementById('coreSphere').classList.add('brightened');
-  floatIcons.forEach((ic,idx)=>setTimeout(()=>{ic.warping=true;resetWarpIcon(ic);},idx*40));
-  setTimeout(()=>{
-    floatIcons.forEach(ic=>{ic.warping=false;ic.el.style.transform='scale(1)';ic.el.style.filter='none';ic.el.style.opacity='0.07';});
-    document.getElementById('coreSphere').classList.remove('brightened');
-    setTimeout(()=>{btn.textContent='Activate';btn.classList.remove('warping');btn.disabled=false;activated=false;;},500);
-  },4000);
-}
-
-/* ── Email ── */
+/* ── Email lead capture ── */
 const CAPTURE='https://bgswqjgswlvdazseyhvu.supabase.co/functions/v1/capture-lead';
 async function submitEmail(){
   const inp=document.getElementById('emailInput'),btn=inp.nextElementSibling,email=inp.value.trim();
