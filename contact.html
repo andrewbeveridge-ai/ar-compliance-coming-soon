@@ -17,6 +17,24 @@
   <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/style.css">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <style>
+    /* Quote-request form (contact page only) */
+    .qf-field { margin-bottom:.9rem; }
+    .qf-field > label { display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--navy); margin-bottom:.35rem; }
+    .qf-field input, .qf-field textarea { width:100%; min-height:46px; padding:.7rem .9rem; border:1.5px solid var(--line); border-radius:5px; background:#fff; font-family:'Inter',sans-serif; font-size:1rem; color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s; }
+    .qf-field textarea { min-height:88px; resize:vertical; }
+    .qf-field input:focus, .qf-field textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(30,58,95,.14); }
+    .qf-req { color:var(--orange); }
+    .qf-services { display:grid; grid-template-columns:1fr 1fr; gap:.35rem .9rem; }
+    .qf-services label { display:flex; align-items:flex-start; gap:.5rem; margin:0; font-family:'Inter',sans-serif; font-weight:400; text-transform:none; letter-spacing:0; font-size:.9rem; color:var(--ink); cursor:pointer; }
+    .qf-services input { width:auto; min-height:0; margin-top:.2rem; accent-color:var(--orange); }
+    .qf-submit { width:100%; margin-top:.5rem; }
+    .qf-optional { text-transform:none; letter-spacing:0; font-weight:400; color:var(--steel); }
+    .mini-signup { margin-top:1.6rem; padding-top:1.2rem; border-top:1px dashed var(--line); }
+    /* Honeypot — visually removed, still in the DOM for bots to trip on */
+    .hp-field { position:absolute !important; left:-9999px !important; top:auto; width:1px; height:1px; opacity:0; pointer-events:none; }
+    @media(max-width:560px){ .qf-services { grid-template-columns:1fr; } }
+  </style>
 </head>
 <body data-page="contact">
 
@@ -73,16 +91,62 @@
         </div>
 
         <div class="form-card">
-          <p class="lead">Prefer to get in touch online? Leave your email and we'll reach out about scheduling, quotes, and early portal access.</p>
-          <label class="form-label" for="emailInput">Get In Touch</label>
-          <div class="input-row" id="inputRow">
-            <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email" inputmode="email">
-            <input type="text" name="_hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;height:0;width:0">
-            <button onclick="submitEmail()">Notify Me</button>
+          <p class="lead">Tell us about your site and we'll get back to you with a quote and a testing schedule.</p>
+
+          <form id="quoteForm" novalidate autocomplete="on">
+            <div class="qf-field">
+              <label for="qfName">Name <span class="qf-req">*</span></label>
+              <input type="text" id="qfName" autocomplete="name" required>
+            </div>
+            <div class="qf-field">
+              <label for="qfPhone">Phone <span class="qf-req">*</span></label>
+              <input type="tel" id="qfPhone" autocomplete="tel" inputmode="tel" required>
+            </div>
+            <div class="qf-field">
+              <label for="qfEmail">Email <span class="qf-req">*</span></label>
+              <input type="email" id="qfEmail" autocomplete="email" inputmode="email" required>
+            </div>
+            <div class="qf-field">
+              <label for="qfLocation">Site address / city <span class="qf-req">*</span></label>
+              <input type="text" id="qfLocation" autocomplete="street-address" required>
+            </div>
+            <div class="qf-field">
+              <label>Which service(s) do you need?</label>
+              <div class="qf-services">
+                <label><input type="checkbox" class="qf-svc" value="Line &amp; Leak-Detector Testing"> Line &amp; Leak-Detector Testing</label>
+                <label><input type="checkbox" class="qf-svc" value="Tank Tightness Testing"> Tank Tightness Testing</label>
+                <label><input type="checkbox" class="qf-svc" value="Annual UST Inspections"> Annual UST Inspections</label>
+                <label><input type="checkbox" class="qf-svc" value="Release-Detection (ATG) Verification"> Release-Detection (ATG) Verification</label>
+                <label><input type="checkbox" class="qf-svc" value="Secondary Containment Testing"> Secondary Containment Testing</label>
+                <label><input type="checkbox" class="qf-svc" value="Spill Bucket Testing"> Spill Bucket Testing</label>
+                <label><input type="checkbox" class="qf-svc" value="Annual Compliance Package"> Annual Compliance Package</label>
+                <label><input type="checkbox" class="qf-svc" value="Not sure — recommend what I need"> Not sure — recommend what I need</label>
+              </div>
+            </div>
+            <div class="qf-field">
+              <label for="qfNotes">Message <span class="qf-optional">(optional)</span></label>
+              <textarea id="qfNotes" placeholder="Anything we should know about your site?"></textarea>
+            </div>
+            <!-- Honeypot: hidden decoy field; bots fill it, real users never see it. Sent to Supabase as _hp. -->
+            <input type="text" name="website" id="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <button type="button" id="qfSubmit" class="btn btn-primary qf-submit" onclick="submitQuote()">Request My Quote</button>
+          </form>
+
+          <div class="success-msg" id="quoteSuccess"><span class="star">&#10022;</span>&nbsp; Thanks — we'll be in touch shortly.</div>
+          <div class="error-msg" id="quoteError"></div>
+          <p class="privacy-note">No spam &nbsp;&middot;&nbsp; We'll only use this to contact you about your request.</p>
+
+          <div class="mini-signup">
+            <label class="form-label" for="emailInput">Just want updates? Leave your email</label>
+            <div class="input-row" id="inputRow">
+              <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email" inputmode="email">
+              <input type="text" name="website" id="hp2" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
+              <button type="button" id="miniBtn" onclick="submitEmail()">Notify Me</button>
+            </div>
+            <div class="success-msg" id="successMsg"><span class="star">&#10022;</span>&nbsp; You're on the list.</div>
+            <div class="error-msg" id="errorMsg"></div>
+            <p class="privacy-note">No spam &nbsp;&middot;&nbsp; Unsubscribe anytime</p>
           </div>
-          <div class="success-msg" id="successMsg"><span class="star">&#10022;</span>&nbsp; You're on the list.</div>
-          <div class="error-msg" id="errorMsg"></div>
-          <p class="privacy-note">No spam &nbsp;&middot;&nbsp; Unsubscribe anytime</p>
         </div>
       </div>
     </div>
@@ -119,23 +183,51 @@
 <!-- ===== /SHARED FOOTER ===== -->
 
 <script>
-/* ── Email lead capture (moved from index.html — wiring unchanged) ── */
+/* ── Lead capture — Supabase endpoint & payload wiring unchanged (entity/dba/source/_hp) ── */
 const CAPTURE='https://bgswqjgswlvdazseyhvu.supabase.co/functions/v1/capture-lead';
-async function submitEmail(){
-  const inp=document.getElementById('emailInput'),btn=inp.nextElementSibling,email=inp.value.trim();
-  const emailRe=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
-  if(!email||!emailRe.test(email)){showErr('Please enter a valid email (e.g. name@domain.com)');return;}
-  const orig=btn.textContent;btn.textContent='...';btn.disabled=true;
-  const hp=document.getElementById('hp')?document.getElementById('hp').value:'';
-  try{
-    const r=await fetch(CAPTURE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({entity:'CBUS',dba:'Another Realm Compliance',source:'web:home',email:email,_hp:hp})});
-    const data=await r.json();
-    if(data&&data.ok){document.getElementById('inputRow').style.display='none';document.getElementById('successMsg').style.display='block';}
-    else{btn.textContent=orig;btn.disabled=false;showErr(data&&data.error||'Something went wrong. Try again.');}
-  }catch(e){btn.textContent=orig;btn.disabled=false;showErr('Something went wrong. Try again.');}
+const RENDER_TS=Date.now();          /* timing trap: form-render timestamp */
+const MIN_FILL_MS=3000;              /* reject submissions faster than a human can fill */
+const emailRe=/^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
+
+function val(id){var el=document.getElementById(id);return el?el.value.trim():'';}
+function flash(id,msg){var e=document.getElementById(id);e.textContent=msg;e.style.display='block';setTimeout(function(){e.style.display='none';},5000);}
+async function postLead(payload){
+  const r=await fetch(CAPTURE,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+  return r.json();
 }
-function showErr(m){const e=document.getElementById('errorMsg');e.textContent=m;e.style.display='block';setTimeout(()=>e.style.display='none',4000);}
-document.getElementById('emailInput').addEventListener('keydown',e=>{if(e.key==='Enter')submitEmail();});
+
+/* ── Full quote request ── */
+async function submitQuote(){
+  const hp=val('hp');                                        /* decoy "website" field → sent as _hp */
+  if(Date.now()-RENDER_TS<MIN_FILL_MS) return;               /* timing trap: silently drop bot-speed submits */
+  const name=val('qfName'),phone=val('qfPhone'),email=val('qfEmail'),location=val('qfLocation'),notes=val('qfNotes');
+  if(!name) return flash('quoteError','Please enter your name.');
+  if(!phone) return flash('quoteError','Please enter a phone number.');
+  if(!email||!emailRe.test(email)) return flash('quoteError','Please enter a valid email (e.g. name@domain.com).');
+  if(!location) return flash('quoteError','Please enter your site address or city.');
+  const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
+  const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
+  try{
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:home',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,_hp:hp});
+    if(data&&data.ok){document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';}
+    else{btn.textContent=orig;btn.disabled=false;flash('quoteError',(data&&data.error)||'Something went wrong. Try again or call us.');}
+  }catch(e){btn.textContent=orig;btn.disabled=false;flash('quoteError','Something went wrong. Try again or call us.');}
+}
+
+/* ── Mini email-only updates signup ── */
+async function submitEmail(){
+  const hp=val('hp2');                                       /* decoy "website" field → sent as _hp */
+  if(Date.now()-RENDER_TS<MIN_FILL_MS) return;               /* timing trap: silently drop bot-speed submits */
+  const email=val('emailInput');
+  if(!email||!emailRe.test(email)) return flash('errorMsg','Please enter a valid email (e.g. name@domain.com)');
+  const btn=document.getElementById('miniBtn'),orig=btn.textContent;btn.textContent='...';btn.disabled=true;
+  try{
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:home',email:email,_hp:hp});
+    if(data&&data.ok){document.getElementById('inputRow').style.display='none';document.getElementById('successMsg').style.display='block';}
+    else{btn.textContent=orig;btn.disabled=false;flash('errorMsg',(data&&data.error)||'Something went wrong. Try again.');}
+  }catch(e){btn.textContent=orig;btn.disabled=false;flash('errorMsg','Something went wrong. Try again.');}
+}
+document.getElementById('emailInput').addEventListener('keydown',function(e){if(e.key==='Enter')submitEmail();});
 </script>
 </body>
 </html>
