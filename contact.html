@@ -208,7 +208,7 @@ async function submitQuote(){
   const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
   const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
   try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:home',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,_hp:hp});
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,_hp:hp});
     if(data&&data.ok){document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';}
     else{btn.textContent=orig;btn.disabled=false;flash('quoteError',(data&&data.error)||'Something went wrong. Try again or call us.');}
   }catch(e){btn.textContent=orig;btn.disabled=false;flash('quoteError','Something went wrong. Try again or call us.');}
@@ -222,7 +222,7 @@ async function submitEmail(){
   if(!email||!emailRe.test(email)) return flash('errorMsg','Please enter a valid email (e.g. name@domain.com)');
   const btn=document.getElementById('miniBtn'),orig=btn.textContent;btn.textContent='...';btn.disabled=true;
   try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:home',email:email,_hp:hp});
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:updates',email:email,_hp:hp});
     if(data&&data.ok){document.getElementById('inputRow').style.display='none';document.getElementById('successMsg').style.display='block';}
     else{btn.textContent=orig;btn.disabled=false;flash('errorMsg',(data&&data.error)||'Something went wrong. Try again.');}
   }catch(e){btn.textContent=orig;btn.disabled=false;flash('errorMsg','Something went wrong. Try again.');}
