@@ -21,15 +21,21 @@
     /* Quote-request form (contact page only) */
     .qf-field { margin-bottom:.9rem; }
     .qf-field > label { display:block; font-family:'Rajdhani',sans-serif; font-weight:600; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--navy); margin-bottom:.35rem; }
-    .qf-field input, .qf-field textarea { width:100%; min-height:46px; padding:.7rem .9rem; border:1.5px solid var(--line); border-radius:5px; background:#fff; font-family:'Inter',sans-serif; font-size:1rem; color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s; }
+    .qf-field input, .qf-field textarea, .qf-field select { width:100%; min-height:46px; padding:.7rem .9rem; border:1.5px solid var(--line); border-radius:5px; background:#fff; font-family:'Inter',sans-serif; font-size:1rem; color:var(--ink); outline:none; transition:border-color .2s, box-shadow .2s; }
     .qf-field textarea { min-height:88px; resize:vertical; }
-    .qf-field input:focus, .qf-field textarea:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(30,58,95,.14); }
+    .qf-field input:focus, .qf-field textarea:focus, .qf-field select:focus { border-color:var(--navy); box-shadow:0 0 0 3px rgba(30,58,95,.14); }
     .qf-req { color:var(--orange); }
+    .qf-helper { font-size:.85rem; color:var(--steel); margin:-.3rem 0 .9rem; }
     .qf-services { display:grid; grid-template-columns:1fr 1fr; gap:.35rem .9rem; }
     .qf-services label { display:flex; align-items:flex-start; gap:.5rem; margin:0; font-family:'Inter',sans-serif; font-weight:400; text-transform:none; letter-spacing:0; font-size:.9rem; color:var(--ink); cursor:pointer; }
     .qf-services input { width:auto; min-height:0; margin-top:.2rem; accent-color:var(--orange); }
     .qf-submit { width:100%; margin-top:.5rem; }
     .qf-optional { text-transform:none; letter-spacing:0; font-weight:400; color:var(--steel); }
+    .qf-consent { display:flex; align-items:flex-start; gap:.6rem; margin:.4rem 0 .2rem; }
+    .qf-consent input { width:auto; min-height:0; margin-top:.25rem; flex-shrink:0; accent-color:var(--orange); }
+    .qf-consent label { font-family:'Inter',sans-serif; font-weight:400; text-transform:none; letter-spacing:0; font-size:.88rem; color:var(--ink); line-height:1.5; margin:0; }
+    .qf-consent-links { font-size:.82rem; color:var(--steel); margin:0 0 .6rem 1.85rem; }
+    .qf-consent-links a { color:var(--orange); font-weight:600; }
     .mini-signup { margin-top:1.6rem; padding-top:1.2rem; border-top:1px dashed var(--line); }
     /* Honeypot — visually removed, still in the DOM for bots to trip on */
     .hp-field { position:absolute !important; left:-9999px !important; top:auto; width:1px; height:1px; opacity:0; pointer-events:none; }
@@ -98,17 +104,27 @@
               <label for="qfName">Name <span class="qf-req">*</span></label>
               <input type="text" id="qfName" autocomplete="name" required>
             </div>
+            <p class="qf-helper">Enter at least one — a phone number or an email — so we can reach you.</p>
             <div class="qf-field">
-              <label for="qfPhone">Phone <span class="qf-req">*</span></label>
-              <input type="tel" id="qfPhone" autocomplete="tel" inputmode="tel" required>
+              <label for="qfPhone">Phone</label>
+              <input type="tel" id="qfPhone" autocomplete="tel" inputmode="tel">
             </div>
             <div class="qf-field">
-              <label for="qfEmail">Email <span class="qf-req">*</span></label>
-              <input type="email" id="qfEmail" autocomplete="email" inputmode="email" required>
+              <label for="qfEmail">Email</label>
+              <input type="email" id="qfEmail" autocomplete="email" inputmode="email">
             </div>
             <div class="qf-field">
               <label for="qfLocation">Site address / city <span class="qf-req">*</span></label>
               <input type="text" id="qfLocation" autocomplete="street-address" required>
+            </div>
+            <div class="qf-field">
+              <label for="qfPreferred">Preferred contact method <span class="qf-optional">(optional)</span></label>
+              <select id="qfPreferred" autocomplete="off">
+                <option value="">No preference</option>
+                <option value="phone">Phone call</option>
+                <option value="text">Text message</option>
+                <option value="email">Email</option>
+              </select>
             </div>
             <div class="qf-field">
               <label>Which service(s) do you need?</label>
@@ -127,6 +143,11 @@
               <label for="qfNotes">Message <span class="qf-optional">(optional)</span></label>
               <textarea id="qfNotes" placeholder="Anything we should know about your site?"></textarea>
             </div>
+            <div class="qf-consent">
+              <input type="checkbox" id="qfConsent">
+              <label for="qfConsent">I agree to receive calls and text messages from Another Realm Compliance about my request, including testing schedule and compliance deadline reminders. Msg &amp; data rates may apply. Msg frequency varies. Reply STOP to opt out, HELP for help. Consent is not a condition of service.</label>
+            </div>
+            <p class="qf-consent-links">See our <a href="/legal#privacy">Privacy Policy</a> and <a href="/legal#terms">Terms</a>.</p>
             <!-- Honeypot: hidden decoy field; bots fill it, real users never see it. Sent to Supabase as _hp. -->
             <input type="text" name="website" id="hp" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
             <button type="button" id="qfSubmit" class="btn btn-primary qf-submit" onclick="submitQuote()">Request My Quote</button>
@@ -177,6 +198,7 @@
     <div class="foot-legal">
       <span>&copy; 2026 Another Realm Compliance &middot; UST / AST Compliance Testing &middot; Columbus, Ohio</span>
       <span>Another Realm Compliance is a DBA of CBUS Express Transport Limited.</span>
+      <span><a href="/legal#terms" style="color:#cdd6e0;text-decoration:underline;">Terms</a> &middot; <a href="/legal#privacy" style="color:#cdd6e0;text-decoration:underline;">Privacy</a></span>
     </div>
   </div>
 </footer>
@@ -201,14 +223,16 @@ async function submitQuote(){
   const hp=val('hp');                                        /* decoy "website" field → sent as _hp */
   if(Date.now()-RENDER_TS<MIN_FILL_MS) return;               /* timing trap: silently drop bot-speed submits */
   const name=val('qfName'),phone=val('qfPhone'),email=val('qfEmail'),location=val('qfLocation'),notes=val('qfNotes');
+  const preferred_contact=val('qfPreferred');
+  const sms_consent=!!(document.getElementById('qfConsent')&&document.getElementById('qfConsent').checked);
   if(!name) return flash('quoteError','Please enter your name.');
-  if(!phone) return flash('quoteError','Please enter a phone number.');
-  if(!email||!emailRe.test(email)) return flash('quoteError','Please enter a valid email (e.g. name@domain.com).');
+  if(!phone && !email) return flash('quoteError','Please enter a phone number or an email so we can reach you.');
+  if(email && !emailRe.test(email)) return flash('quoteError','Please enter a valid email (e.g. name@domain.com).');
   if(!location) return flash('quoteError','Please enter your site address or city.');
   const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
   const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
   try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,_hp:hp});
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,sms_consent:sms_consent,_hp:hp});
     if(data&&data.ok){document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';}
     else{btn.textContent=orig;btn.disabled=false;flash('quoteError',(data&&data.error)||'Something went wrong. Try again or call us.');}
   }catch(e){btn.textContent=orig;btn.disabled=false;flash('quoteError','Something went wrong. Try again or call us.');}
