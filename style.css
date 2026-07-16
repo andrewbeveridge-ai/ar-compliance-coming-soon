@@ -76,6 +76,7 @@ h1,h2,h3,h4 { font-family:'Rajdhani',sans-serif; color:var(--navy); line-height:
 .site-nav a:hover { color:var(--orange); }
 body[data-page="home"] .nav-home,
 body[data-page="services"] .nav-services,
+body[data-page="rates"] .nav-rates,
 body[data-page="certs"] .nav-certs,
 body[data-page="portal"] .nav-portal,
 body[data-page="about"] .nav-about,
