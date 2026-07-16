@@ -7,10 +7,10 @@ compliance testing. Hosted on Netlify (publish root `.`, auto-deploys on push to
 ## Structure (multi-page static, no build step)
 - `index.html` (Home) · `services.html` · `certifications.html` · `portal.html` ·
   `about.html` · `contact.html`
-- `style.css` — one shared stylesheet linked by every page.
+- `style.<hash>.css` — one shared stylesheet linked by every page (content-hash fingerprinted; see "Cached assets" below).
 - Shared header/nav + navy footer band are copied byte-identical into each page
   (no server includes). `resources.html` nav slot is reserved as an HTML comment.
-- `favicon.svg`, `robots.txt` (allow-all), `sitemap.xml`, `og-image.png`.
+- `favicon.<hash>.svg`, `og-image.<hash>.png` (both content-hash fingerprinted), `robots.txt` (allow-all), `sitemap.xml`.
 
 ## DO NOT TOUCH
 - `netlify.toml` — security headers (X-Frame-Options: DENY, X-Content-Type-Options: nosniff). No edits.
@@ -30,6 +30,26 @@ compliance testing. Hosted on Netlify (publish root `.`, auto-deploys on push to
   (headings, header, footer band, linework) · Steel Gray `#8A94A0` (captions, hatch) · White background.
 - Fonts: Rajdhani 500/600/700 (headings/wordmark/nav, uppercase) · Inter 400/500/600 (body).
 - Section divider motif: thin dashed navy "grade line" with sparse gray hatch ticks (`.grade-divider`).
+
+## Cached assets — content-hash fingerprinting (REQUIRED)
+`style.css`, `favicon.svg`, and `og-image.png` are served with a long immutable
+cache (`public, max-age=31536000, immutable` via netlify.toml's `/*.css` /
+`/*.svg` / `/*.png` rules). To make that safe, each filename embeds a short
+content hash: `style.<hash>.css`, `favicon.<hash>.svg`, `og-image.<hash>.png`.
+
+**Rule:** ANY edit to one of these three files MUST also (1) recompute its hash,
+(2) rename the file to the new hash, and (3) update every reference in all HTML
+pages (stylesheet `<link>`, favicon `<link>`, and the absolute `og:image` meta on
+every page). Never edit these files in place under the same filename — the old
+immutable cache would serve stale bytes.
+
+Repeatable manual steps (no build step exists):
+1. `h=$(sha256sum <file> | cut -c1-8)`
+2. `git mv <name>.<ext> <name>.$h.<ext>`
+3. Replace the old filename with the new one across all `*.html` (grep to confirm
+   zero stale references remain).
+HTML pages themselves are NOT fingerprinted — they stay on `no-cache,
+must-revalidate` with clean URLs.
 
 ## Discipline
 Static HTML + one shared CSS. No framework, no build step, no npm.
