@@ -227,15 +227,27 @@ async function submitQuote(){
   const name=val('qfName'),phone=val('qfPhone'),email=val('qfEmail'),location=val('qfLocation'),notes=val('qfNotes');
   const preferred_contact=val('qfPreferred');
   const sms_consent=!!(document.getElementById('qfConsent')&&document.getElementById('qfConsent').checked);
+  /* Capture the consent copy live from the DOM (proof-of-consent). Never a hardcoded
+     duplicate — if the displayed copy is edited later, this stays in sync automatically. */
+  var consentEl=document.querySelector('.qf-consent label');
+  const consent_text=consentEl?consentEl.textContent.trim().replace(/\s+/g,' '):'';
   if(!name) return flash('quoteError','Please enter your name.');
   if(!phone && !email) return flash('quoteError','Please enter a phone number or an email so we can reach you.');
+  if(phone){var phoneDigits=phone.replace(/\D/g,'');if(phoneDigits.length===11&&phoneDigits.charAt(0)==='1')phoneDigits=phoneDigits.slice(1);if(phoneDigits.length!==10) return flash('quoteError','Please enter a valid 10-digit US phone number.');}
   if(email && !emailRe.test(email)) return flash('quoteError','Please enter a valid email (e.g. name@domain.com).');
   if(!location) return flash('quoteError','Please enter your site address or city.');
   const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
   const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
   try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,sms_consent:sms_consent,_hp:hp});
-    if(data&&data.ok){document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';}
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,sms_consent:sms_consent,consent_text:consent_text,_hp:hp});
+    if(data&&data.ok){
+      if(phone && !email){
+        var qs=document.getElementById('quoteSuccess');
+        qs.innerHTML='<span class="star">&#10022;</span>&nbsp; ';
+        qs.appendChild(document.createTextNode("We've received your request and will call you at "+phone+" to confirm scheduling."));
+      }
+      document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';
+    }
     else{btn.textContent=orig;btn.disabled=false;flash('quoteError',(data&&data.error)||'Something went wrong. Try again or call us.');}
   }catch(e){btn.textContent=orig;btn.disabled=false;flash('quoteError','Something went wrong. Try again or call us.');}
 }
