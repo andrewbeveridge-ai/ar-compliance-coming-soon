@@ -118,12 +118,25 @@
             <div class="qf-field">
               <label>Which service(s) do you need?</label>
               <div class="qf-services">
-                <label><input type="checkbox" class="qf-svc" value="Line &amp; Leak-Detector Testing"> Line &amp; Leak-Detector Testing</label>
-                <label><input type="checkbox" class="qf-svc" value="Tank Tightness Testing"> Tank Tightness Testing</label>
-                <label><input type="checkbox" class="qf-svc" value="Annual UST Inspections"> Annual UST Inspections</label>
+                <label><input type="checkbox" class="qf-svc" value="Line Tightness Test"> Line Tightness Test</label>
+                <label><input type="checkbox" class="qf-svc" value="Line + Leak Detector"> Line + Leak Detector</label>
+                <label><input type="checkbox" class="qf-svc" value="Leak Detector Only"> Leak Detector Only</label>
+                <label><input type="checkbox" class="qf-svc" value="Line / Piping Interstitial"> Line / Piping Interstitial</label>
+                <label><input type="checkbox" class="qf-svc" value="Tank Tightness Test"> Tank Tightness Test</label>
+                <label><input type="checkbox" class="qf-svc" value="Tank Interstitial — Dry / Vacuum"> Tank Interstitial — Dry / Vacuum</label>
+                <label><input type="checkbox" class="qf-svc" value="Tank Interstitial — Wet / Brine"> Tank Interstitial — Wet / Brine</label>
+                <label><input type="checkbox" class="qf-svc" value="Secondary Containment"> Secondary Containment</label>
+                <label><input type="checkbox" class="qf-svc" value="Spill Bucket — Hydrostatic"> Spill Bucket — Hydrostatic</label>
+                <label><input type="checkbox" class="qf-svc" value="Spill Bucket — Double-Wall Vacuum"> Spill Bucket — Double-Wall Vacuum</label>
                 <label><input type="checkbox" class="qf-svc" value="Release-Detection (ATG) Verification"> Release-Detection (ATG) Verification</label>
-                <label><input type="checkbox" class="qf-svc" value="Secondary Containment Testing"> Secondary Containment Testing</label>
-                <label><input type="checkbox" class="qf-svc" value="Spill Bucket Testing"> Spill Bucket Testing</label>
+                <label><input type="checkbox" class="qf-svc" value="Sensors"> Sensors</label>
+                <label><input type="checkbox" class="qf-svc" value="Overfill Verification"> Overfill Verification</label>
+                <label><input type="checkbox" class="qf-svc" value="Shear / Fire-Safety Valve"> Shear / Fire-Safety Valve</label>
+                <label><input type="checkbox" class="qf-svc" value="E-Stop / EMO"> E-Stop / EMO</label>
+                <label><input type="checkbox" class="qf-svc" value="Annual Walkthrough Inspection"> Annual Walkthrough Inspection</label>
+                <label><input type="checkbox" class="qf-svc" value="Stage I Pressure Decay"> Stage I Pressure Decay</label>
+                <label><input type="checkbox" class="qf-svc" value="Stage I Vapor Balance"> Stage I Vapor Balance</label>
+                <label><input type="checkbox" class="qf-svc" value="Stage I PV Vent Cap"> Stage I PV Vent Cap</label>
                 <label><input type="checkbox" class="qf-svc" value="Annual Compliance Package"> Annual Compliance Package</label>
                 <label><input type="checkbox" class="qf-svc" value="Not sure — recommend what I need"> Not sure — recommend what I need</label>
               </div>
@@ -267,5 +280,120 @@ async function submitEmail(){
 }
 document.getElementById('emailInput').addEventListener('keydown',function(e){if(e.key==='Enter')submitEmail();});
 </script>
+<!-- ============================================================
+     ARC — estimate handoff from /quote
+     Paste immediately before the closing body tag in contact.html
+
+     WHAT IT DOES
+       Reads the estimate stashed by /quote and drops it into the
+       EXISTING message field, then shows a confirmation banner.
+
+     WHAT IT DOES NOT DO
+       - Does not add, rename, or remove any form field
+       - Does not touch the capture-lead payload or its contract
+       - Does not change source="web:quote"
+       - Does not auto-submit (see note at bottom)
+
+     CONFIRMED SELECTORS (verified against contact.html):
+       notes textarea = #qfNotes | location = #qfLocation | service boxes = .qf-svc
+     ============================================================ -->
+<script>
+(function(){
+  "use strict";
+
+  /* Confirmed against contact.html: notes textarea is #qfNotes,
+     location text is #qfLocation, service checkboxes are .qf-svc
+     whose value attribute is the service label. */
+  var NOTES_SEL='#qfNotes', LOC_SEL='#qfLocation', SVC_SEL='.qf-svc';
+
+  var KEY='arc_estimate', MARK='--- PRELIMINARY ESTIMATE';
+
+  var raw=null;
+  try{ raw=sessionStorage.getItem(KEY); }catch(e){ return; }
+  if(!raw) return;
+
+  var est;
+  try{ est=JSON.parse(raw); }catch(e){ return; }
+  if(!est||!est.summary) return;
+
+  /* stale guard: ignore anything older than 2 hours */
+  if(est.generated && (Date.now()-new Date(est.generated).getTime() > 2*60*60*1000)){
+    try{ sessionStorage.removeItem(KEY); }catch(e){}
+    return;
+  }
+
+  var notes=document.querySelector(NOTES_SEL);
+  if(!notes){
+    console.warn('[ARC] estimate present but #qfNotes not found — check contact.html');
+    return;
+  }
+
+  /* 1) estimate summary into notes, without clobbering typed text, never twice */
+  if(notes.value.indexOf(MARK)===-1){
+    var block=MARK+' ---\n'+est.summary+'--- end of estimate ---\n\n';
+    notes.value = block + (notes.value||'');
+    notes.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+
+  /* 2) prefill the required Location field from the ZIP (only if the user hasn't typed one) */
+  var loc=document.querySelector(LOC_SEL);
+  if(loc && !loc.value && est.zip){
+    loc.value='ZIP '+est.zip;
+    loc.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+
+  /* 3) tick the service checkboxes the estimate covers. est.keys already
+        holds the EXACT .qf-svc values, so this is an exact (normalized)
+        match — no fuzzy guessing. Only ever checks; never unchecks the
+        customer's own choices. */
+  if(est.keys && est.keys.length){
+    var boxes=document.querySelectorAll(SVC_SEL);
+    est.keys.forEach(function(want){
+      var w=norm(want);
+      for(var i=0;i<boxes.length;i++){
+        if(norm(boxes[i].value)===w){
+          if(!boxes[i].checked){ boxes[i].checked=true; boxes[i].dispatchEvent(new Event('change',{bubbles:true})); }
+          break;
+        }
+      }
+    });
+  }
+
+  function norm(s){return String(s).toLowerCase().replace(/[^a-z0-9]+/g,' ').trim();}
+
+  /* visible confirmation so the customer knows it came across */
+  var fmt = (typeof est.total==='number') ? est.total.toLocaleString('en-US') : est.total;
+  var bar=document.createElement('div');
+  bar.setAttribute('role','status');
+  bar.style.cssText='margin:0 0 18px;padding:13px 15px;background:#fff6ef;border:1px solid #ffd9b8;'+
+    'border-left:4px solid #FF6B00;border-radius:8px;font:14px/1.5 Inter,system-ui,sans-serif;color:#4a3a2a';
+  bar.innerHTML='<strong style="color:#e65f00">Your estimate is attached.</strong> '+
+    'Preliminary total <strong>$'+fmt+'</strong>'+(est.zip?' for ZIP '+est.zip:'')+
+    ' — included with your request below. This is a preliminary estimate, not a firm price; '+
+    'we confirm final pricing after assessing the site.'+
+    ' <a href="/quote" style="color:#1E3A5F">Edit estimate</a>';
+
+  var form=notes.closest('form')||notes.parentNode;
+  form.parentNode.insertBefore(bar, form);
+
+  /* clear once actually submitted, so a later visit starts clean */
+  var f=notes.closest('form');
+  if(f) f.addEventListener('submit',function(){ try{ sessionStorage.removeItem(KEY); }catch(e){} });
+})();
+</script>
+<!-- ============================================================
+     ON AUTO-SUBMIT — deliberately not done.
+
+     The quote page never collects a name, email, or phone, so an
+     auto-submitted form would reach you as an anonymous estimate
+     with no one to call back. The contact form also carries an SMS
+     consent choice, and consent has to be given by the customer,
+     not pre-checked on their behalf.
+
+     Net effect is what you asked for: the customer never re-enters
+     the estimate. They add their contact details and hit submit,
+     and the full estimate arrives in your owner notification.
+     ============================================================ -->
+
 </body>
 </html>
