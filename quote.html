@@ -301,14 +301,14 @@
         <div class="top">
           <div class="k">Your preliminary estimate</div>
           <div class="amount"><span class="cur">$</span><span id="amt">0</span></div>
-          <div class="under">Preliminary — a starting point, not a bookable price.</div>
+          <div class="under">Preliminary — a starting point we confirm after seeing your site.</div>
         </div>
         <div class="body">
           <div id="lines" class="lines"><div class="empty">Enter your ZIP and choose services to see your estimate.</div></div>
 
           <div class="disclaimer">
             <div class="dh">This is an estimate, not a quote</div>
-            <p>It's calculated only from the details you entered — <b>not a verified site visit</b> — so it isn't a firm or bookable price. We confirm final pricing after we assess your actual site. Real site conditions, scope, and access can change the total. Travel is estimated from your ZIP and confirmed with the full site address.</p>
+            <p>It's calculated only from the details you entered — <b>not a verified site visit</b> — so it isn't your final price. We confirm final pricing after we assess your actual site. Real site conditions, scope, and access can change the total. Travel is estimated from your ZIP and confirmed with the full site address.</p>
           </div>
 
           <div class="gate" id="gate">Add a valid ZIP code to price the trip and attach a full estimate to your request.</div>
@@ -363,8 +363,10 @@ var ZR={};
 
 var HQ=[39.9612,-82.9988];       /* Columbus, OH */
 var ROAD=1.15;                    /* straight-line -> road factor */
-var DAYTRIP=250;                  /* one-way miles beyond which travel is custom */
-var SITE_MIN=450, FREE_RT=60, MILE=1.00;
+var DAYTRIP=350;                  /* one-way miles beyond which travel needs a custom quote (2-day trip) */
+var TRIP_FEE=450, FREE_RT=60, MILE=1.00;
+var LODGING_TRIGGER=150, LODGING=150;
+var PER_DIEM=0; /* dormant: per diem folded into trip fee; set >0 to itemize on 150+ mi trips */
 
 var RATES={
   lineT:{b:175,o:150,l:"Line tightness test"},
@@ -403,7 +405,7 @@ function checkZip(){
   if(z.length===0){ msg.textContent="We use this to estimate travel. Your first 60 round-trip miles are included."; return; }
   if(z.length<5){ msg.textContent="Enter all 5 digits."; return; }
   var c=ZT[z.slice(0,3)];
-  if(!c || !zipExists(z)){ el.classList.add('bad'); msg.className='zipmsg bad'; msg.innerHTML="We don't recognize that ZIP code. Please double-check it &mdash; or call us at <a href=\"tel:+13802612398\" style=\"color:inherit\">(380) 261-2398</a> and we'll quote it directly."; return; }
+  if(!c){ el.classList.add('bad'); msg.className='zipmsg bad'; msg.innerHTML="We don't recognize that ZIP code. Please double-check it &mdash; or call us at <a href=\"tel:+13802612398\" style=\"color:inherit\">(380) 261-2398</a> and we'll quote it directly."; return; }
 
   var d=Math.round(hav(HQ[0],HQ[1],c[0],c[1])*ROAD/5)*5;
   var r=ZR[z.slice(0,3)]||0;
@@ -436,31 +438,31 @@ function calc(){
   else if(wt==='truck') walk = wtk<=6?250:(wtk<=9?350:350+(wtk-9)*50);
   if(walk>0){ any=true; services+=walk; lines.push({n:"Annual walkthrough ("+wt+", "+wtk+" tanks)", v:walk}); }
 
-  var minAdd=0;
-  if(any && services<SITE_MIN){ minAdd=SITE_MIN-services; }
-  var base=any?(services+minAdd):0;
+  var base=any?(services+TRIP_FEE):0;
 
-  var travel=0, travelLabel="";
+  var travel=0, travelLabel="", lodging=0, perdiem=0;
   if(any && zipState.ok){
-    if(zipState.far){ travelLabel="Travel + lodging — quoted separately"; }
+    if(zipState.far){ travelLabel="Travel & scheduling — quoted separately"; }
     else {
       var rt=zipState.miles*2, bill=Math.max(0,rt-FREE_RT);
       travel=bill*MILE;
       travelLabel = bill>0 ? ("Travel ("+m(bill)+" RT mi beyond "+FREE_RT+")") : ("Travel (within included "+FREE_RT+" RT mi)");
+      if(zipState.miles>=LODGING_TRIGGER){ lodging=LODGING; perdiem=PER_DIEM; }
     }
   }
 
-  var total=any?(base+travel):0;
+  var total=any?(base+travel+lodging+perdiem):0;
   var ready=any&&zipState.ok;
 
   var box=document.getElementById('lines'), html="";
   if(!any){ html='<div class="empty">Choose the services you need to see your estimate.</div>'; }
   else{
     lines.forEach(function(l){ html+='<div class="li"><span>'+l.n+'</span><span>$'+m(l.v)+'</span></div>'; });
-    html+='<div class="li"><span>Site minimum &mdash; trip + first '+FREE_RT+' RT miles</span><span>'+(minAdd>0?('+$'+m(minAdd)):'met')+'</span></div>';
-    html+='<div class="li" style="padding-top:0"><span class="muted" style="font-size:11.5px;font-style:italic">Every visit bills at least $'+m(SITE_MIN)+', covering the trip and the first '+FREE_RT+' round-trip miles.</span><span></span></div>';
+    html+='<div class="li"><span>Trip fee &mdash; mobilization + first '+FREE_RT+' RT miles</span><span>$'+m(TRIP_FEE)+'</span></div>';
     if(zipState.ok) html+='<div class="li"><span class="muted">'+travelLabel+'</span><span class="muted">'+(travel>0?('$'+m(travel)):(zipState.far?'TBD':'included'))+'</span></div>';
     else html+='<div class="li"><span class="muted">Travel — enter ZIP</span><span class="muted">—</span></div>';
+    if(lodging>0) html+='<div class="li"><span class="muted">Overnight lodging</span><span class="muted">$'+m(lodging)+'</span></div>';
+    if(perdiem>0) html+='<div class="li"><span class="muted">Per diem</span><span class="muted">$'+m(perdiem)+'</span></div>';
     html+='<div class="li sub"><span>Estimated total</span><span>$'+m(total)+'</span></div>';
   }
   box.innerHTML=html;
@@ -480,7 +482,7 @@ function calc(){
   document.getElementById('pdfBtn').disabled=!ready;
   document.getElementById('pdfBtn').title=ready?'':'Choose services and enter a valid ZIP to generate a PDF.';
 
-  window.__est={ready:ready,lines:lines,total:total,minAdd:minAdd,travel:travel,travelLabel:travelLabel,
+  window.__est={ready:ready,lines:lines,total:total,tripFee:TRIP_FEE,travel:travel,travelLabel:travelLabel,lodging:lodging,perdiem:perdiem,
                 zip:zipState.zip,miles:zipState.miles,far:zipState.far,keys:selectedGroups()};
 }
 
@@ -518,7 +520,7 @@ function summaryText(e){
   var t="PRELIMINARY ESTIMATE (generated on anotherrealmcompliance.com/quote)\n";
   t+="Site ZIP: "+e.zip+(e.miles?("  |  approx. "+m(e.miles)+" mi one-way"):"")+"\n\nServices requested:\n";
   e.lines.forEach(function(l){ t+="  - "+l.n+": $"+m(l.v)+"\n"; });
-  if(e.minAdd>0) t+="  - Site minimum applied (min $"+m(SITE_MIN)+"): $"+m(e.minAdd)+"\n";
+  t+="  - Trip fee (mobilization + first "+FREE_RT+" RT mi): $"+m(e.tripFee)+"\n";
   if(e.travelLabel) t+="  - "+e.travelLabel+": "+(e.travel>0?("$"+m(e.travel)):(e.far?"quoted separately":"included"))+"\n";
   t+="\nESTIMATED TOTAL: $"+m(e.total)+"\n";
   t+="\nPreliminary estimate only - not a verified site visit and not a firm price.\nPlease confirm final pricing after a site assessment.\n";
@@ -565,8 +567,8 @@ function buildPDF(e){
   txt(L+8,y,9.5,'F2','SERVICE',nv[0],nv[1],nv[2]); rt(R-8,y,9.5,'F2','AMOUNT',nv[0],nv[1],nv[2]); y-=26;
 
   e.lines.forEach(function(l){ txt(L+8,y,10,'F1',l.n,ink[0],ink[1],ink[2]); rt(R-8,y,10,'F1','$'+m(l.v),ink[0],ink[1],ink[2]); y-=17; });
-  txt(L+8,y,10,'F1','Site minimum - trip + first '+FREE_RT+' RT miles ($'+m(SITE_MIN)+')',ink[0],ink[1],ink[2]);
-  rt(R-8,y,10,'F1', e.minAdd>0?('+$'+m(e.minAdd)):'met',ink[0],ink[1],ink[2]); y-=17;
+  txt(L+8,y,10,'F1','Trip fee - mobilization + first '+FREE_RT+' RT miles',ink[0],ink[1],ink[2]);
+  rt(R-8,y,10,'F1', '$'+m(e.tripFee),ink[0],ink[1],ink[2]); y-=17;
   if(e.travelLabel){ txt(L+8,y,10,'F1',e.travelLabel,st[0],st[1],st[2]); rt(R-8,y,10,'F1', e.travel>0?('$'+m(e.travel)):(e.far?'quoted separately':'included'),st[0],st[1],st[2]); y-=17; }
 
   y-=4; rect(L,y-8,R-L,1.2,0.80,0.84,0.88); y-=24;
@@ -576,7 +578,7 @@ function buildPDF(e){
   rect(L,y-bh+14,R-L,bh,1,0.965,0.937); rect(L,y-bh+14,3.5,bh,og[0],og[1],og[2]);
   txt(L+14,y,10.5,'F2','THIS IS AN ESTIMATE, NOT A QUOTE',0.90,0.37,0);
   ['Calculated only from the details provided - not a verified site visit - so it is',
-   'not a firm or bookable price. Final pricing is confirmed after we assess the',
+   'not your final price. Final pricing is confirmed after we assess the',
    'actual site. Real site conditions, scope, and access can change the total.',
    'Travel is estimated from ZIP code and confirmed with the full site address.'
   ].forEach(function(s,i){ txt(L+14,y-16-i*11.5,9,'F1',s,0.29,0.23,0.16); });
