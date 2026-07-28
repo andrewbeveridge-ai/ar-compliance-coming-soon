@@ -371,7 +371,7 @@ document.getElementById('emailInput').addEventListener('keydown',function(e){if(
     'Preliminary total <strong>$'+fmt+'</strong>'+(est.zip?' for ZIP '+est.zip:'')+
     ' — included with your request below. This is a preliminary estimate, not a firm price; '+
     'we confirm final pricing after assessing the site.'+
-    ' <a href="/quote" style="color:#1E3A5F">Edit estimate</a>';
+    '';
 
   var form=notes.closest('form')||notes.parentNode;
   form.parentNode.insertBefore(bar, form);
