@@ -87,6 +87,7 @@
       <div class="contact-cols">
         <div class="form-card">
           <p class="lead">Tell us about your site and we'll get back to you with a quote and a testing schedule.</p>
+          <p class="qf-helper">You don't need to run an estimate first — fill this out and we'll follow up.</p>
 
           <form id="quoteForm" novalidate autocomplete="on">
             <div class="qf-field">
@@ -103,8 +104,11 @@
               <input type="email" id="qfEmail" autocomplete="email" inputmode="email">
             </div>
             <div class="qf-field">
-              <label for="qfLocation">Site address / city <span class="qf-req">*</span></label>
-              <input type="text" id="qfLocation" autocomplete="street-address" required>
+              <label for="qfLocation">Site location <span class="qf-req">*</span></label>
+              <p class="qf-helper">Full address, city, or ZIP — whatever you have.</p>
+              <input type="text" id="qfLocation" autocomplete="street-address" placeholder="123 Main St, Columbus OH 43229 — or just 43229" required>
+              <p id="qfLocationPrefillNote" style="display:none">Prefilled from your estimate — add street address or city if you have it.</p>
+              <input type="hidden" id="qfEstimateZip" name="estimate_zip" value="">
             </div>
             <div class="qf-field">
               <label for="qfPreferred">Preferred contact method <span class="qf-optional">(optional)</span></label>
@@ -140,6 +144,17 @@
                 <label><input type="checkbox" class="qf-svc" value="Annual Compliance Package"> Annual Compliance Package</label>
                 <label><input type="checkbox" class="qf-svc" value="Not sure — recommend what I need"> Not sure — recommend what I need</label>
               </div>
+            </div>
+            <div class="qf-field">
+              <label for="qfTimeframe">When do you need this? (optional)</label>
+              <select id="qfTimeframe" name="timeframe">
+                <option value="">Select if helpful</option>
+                <option value="within_30_days">Within 30 days</option>
+                <option value="1_3_months">1–3 months</option>
+                <option value="planning">Just planning / researching</option>
+                <option value="flexible">Flexible</option>
+              </select>
+              <p class="qf-helper">Helps us prioritize follow-up. Not a booking or scheduling commitment.</p>
             </div>
             <div class="qf-field">
               <label for="qfNotes">Message <span class="qf-optional">(optional)</span></label>
@@ -239,6 +254,8 @@ async function submitQuote(){
   if(Date.now()-RENDER_TS<MIN_FILL_MS) return;               /* timing trap: silently drop bot-speed submits */
   const name=val('qfName'),phone=val('qfPhone'),email=val('qfEmail'),location=val('qfLocation'),notes=val('qfNotes');
   const preferred_contact=val('qfPreferred');
+  const timeframe=val('qfTimeframe');
+  const estimate_zip=val('qfEstimateZip');
   const sms_consent=!!(document.getElementById('qfConsent')&&document.getElementById('qfConsent').checked);
   /* Capture the consent copy live from the DOM (proof-of-consent). Never a hardcoded
      duplicate — if the displayed copy is edited later, this stays in sync automatically. */
@@ -252,7 +269,7 @@ async function submitQuote(){
   const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
   const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
   try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,sms_consent:sms_consent,consent_text:consent_text,_hp:hp});
+    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,timeframe:timeframe,estimate_zip:estimate_zip,sms_consent:sms_consent,consent_text:consent_text,_hp:hp});
     if(data&&data.ok){
       if(phone && !email){
         var qs=document.getElementById('quoteSuccess');
@@ -338,8 +355,10 @@ document.getElementById('emailInput').addEventListener('keydown',function(e){if(
   /* 2) prefill the required Location field from the ZIP (only if the user hasn't typed one) */
   var loc=document.querySelector(LOC_SEL);
   if(loc && !loc.value && est.zip){
-    loc.value='ZIP '+est.zip;
+    loc.value=est.zip;
     loc.dispatchEvent(new Event('input',{bubbles:true}));
+    var pfNote=document.getElementById('qfLocationPrefillNote'); if(pfNote) pfNote.style.display='';
+    var ez=document.getElementById('qfEstimateZip'); if(ez) ez.value=est.zip;
   }
 
   /* 3) tick the service checkboxes the estimate covers. est.keys already
