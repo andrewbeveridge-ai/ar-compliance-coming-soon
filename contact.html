@@ -147,14 +147,17 @@
             </div>
             <div class="qf-field">
               <label for="qfTimeframe">When do you need this? (optional)</label>
+              <!-- KEEP IN SYNC with the timeframe options in the other page -->
               <select id="qfTimeframe" name="timeframe">
                 <option value="">Select if helpful</option>
+                <option value="emergency">Emergency — need it right away</option>
+                <option value="within_week">Within a week</option>
                 <option value="within_30_days">Within 30 days</option>
                 <option value="1_3_months">1–3 months</option>
                 <option value="planning">Just planning / researching</option>
                 <option value="flexible">Flexible</option>
               </select>
-              <p class="qf-helper">Helps us prioritize follow-up. Not a booking or scheduling commitment.</p>
+              <p class="qf-helper" style="margin-top:.35rem">Helps us prioritize how we follow up. Not a booking or scheduling commitment.</p>
             </div>
             <div class="qf-field">
               <label for="qfNotes">Message <span class="qf-optional">(optional)</span></label>
@@ -359,6 +362,13 @@ document.getElementById('emailInput').addEventListener('keydown',function(e){if(
     loc.dispatchEvent(new Event('input',{bubbles:true}));
     var pfNote=document.getElementById('qfLocationPrefillNote'); if(pfNote) pfNote.style.display='';
     var ez=document.getElementById('qfEstimateZip'); if(ez) ez.value=est.zip;
+  }
+
+  /* 2b) carry the estimator timeframe, but only if it exactly matches a known option */
+  var tfSel=document.getElementById('qfTimeframe');
+  if(tfSel && typeof est.timeframe==='string' && est.timeframe){
+    var TF_OK=['emergency','within_week','within_30_days','1_3_months','planning','flexible'];
+    if(TF_OK.indexOf(est.timeframe)!==-1) tfSel.value=est.timeframe;
   }
 
   /* 3) tick the service checkboxes the estimate covers. est.keys already
