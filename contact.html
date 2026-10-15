@@ -180,18 +180,6 @@
             <span class="t">Want to talk now?</span>
             <a class="btn btn-primary" href="tel:+13802612398">Call Now</a>
           </div>
-
-          <div class="mini-signup">
-            <label class="form-label" for="emailInput">Just want updates? Leave your email</label>
-            <div class="input-row" id="inputRow">
-              <input type="email" id="emailInput" placeholder="your@email.com" autocomplete="email" inputmode="email">
-              <input type="text" name="website" id="hp2" class="hp-field" tabindex="-1" autocomplete="off" aria-hidden="true">
-              <button type="button" id="miniBtn" onclick="submitEmail()">Notify Me</button>
-            </div>
-            <div class="success-msg" id="successMsg"><span class="star">&#10022;</span>&nbsp; You're on the list.</div>
-            <div class="error-msg" id="errorMsg"></div>
-            <p class="privacy-note">No spam &nbsp;&middot;&nbsp; Unsubscribe anytime</p>
-          </div>
         </div>
 
         <div class="contact-facts">
@@ -249,6 +237,36 @@ async function postLead(payload){
   return r.json();
 }
 
+/* ── Solicitation filter (client-side only; capture-lead untouched) ──
+   Vendor pitches (SEO, web design) get the normal success screen but are never sent.
+   Tuned for UST compliance vocabulary: "traffic", "marketing" (fuel marketers),
+   "agency" (regulators), "your site", "audit", "scope", "fixed price" are NOT
+   spam signals here. A missed pitch is cheap; a dropped real lead is not. */
+function looksLikeSolicitation(phone,notes,email){
+  var d=(phone||'').replace(/\D/g,'');
+  if(d.length===11&&d.charAt(0)==='1') d=d.slice(1);
+  if(d.length===10&&d.substr(3,3)==='555') return true;
+  var t=((notes||'')+' '+(email||'')).toLowerCase();
+  if(!t.trim()) return false;
+  var strong=[/\bseo\b/,/\bloom\b/,/backlink/,/sorry for the contact form/,
+              /couldn'?t find a better way to reach/,/(first|top) page of google/,/\bpage (1|one) (of|on|in) (google|search)/,
+              /google (visibility|ranking|rankings)/,/\b(web|website) (design|redesign|developer|development)\b/];
+  for(var i=0;i<strong.length;i++){ if(strong[i].test(t)) return true; }
+  var weak=[/\branking/,/whatsapp/,/\bfree (consultation|analysis)\b/,
+            /\byour (website|business listing)\b/,/\bleads? for you\b/];
+  var hits=0;
+  for(var j=0;j<weak.length;j++){ if(weak[j].test(t)) hits++; }
+  return hits>=2;
+}
+function showQuoteSuccess(phone,email){
+  if(phone && !email){
+    var qs=document.getElementById('quoteSuccess');
+    qs.innerHTML='<span class="star">&#10022;</span>&nbsp; ';
+    qs.appendChild(document.createTextNode("We've received your request and will call you at "+phone+" to confirm scheduling."));
+  }
+  document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';
+}
+
 /* ── Full quote request ── */
 async function submitQuote(){
   const hp=val('hp');                                        /* decoy "website" field → sent as _hp */
@@ -267,36 +285,16 @@ async function submitQuote(){
   if(phone){var phoneDigits=phone.replace(/\D/g,'');if(phoneDigits.length===11&&phoneDigits.charAt(0)==='1')phoneDigits=phoneDigits.slice(1);if(phoneDigits.length!==10) return flash('quoteError','Please enter a valid 10-digit US phone number.');}
   if(email && !emailRe.test(email)) return flash('quoteError','Please enter a valid email (e.g. name@domain.com).');
   if(!location) return flash('quoteError','Please enter your site address or city.');
+  if(looksLikeSolicitation(phone,notes,email)){ console.warn('Lead suppressed: looks like a vendor solicitation'); return showQuoteSuccess(phone,email); }
   const services=Array.prototype.slice.call(document.querySelectorAll('.qf-svc:checked')).map(function(c){return c.value;}).join(', ');
   const btn=document.getElementById('qfSubmit'),orig=btn.textContent;btn.textContent='Sending…';btn.disabled=true;
   try{
     const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:quote',name:name,phone:phone,email:email,location:location,service_wanted:services,notes:notes,preferred_contact:preferred_contact,timeframe:timeframe,estimate_zip:estimate_zip,sms_consent:sms_consent,consent_text:consent_text,_hp:hp});
-    if(data&&data.ok){
-      if(phone && !email){
-        var qs=document.getElementById('quoteSuccess');
-        qs.innerHTML='<span class="star">&#10022;</span>&nbsp; ';
-        qs.appendChild(document.createTextNode("We've received your request and will call you at "+phone+" to confirm scheduling."));
-      }
-      document.getElementById('quoteForm').style.display='none';document.getElementById('quoteSuccess').style.display='block';
-    }
+    if(data&&data.ok){ showQuoteSuccess(phone,email); }
     else{btn.textContent=orig;btn.disabled=false;flash('quoteError',(data&&data.error)||'Something went wrong. Try again or call us.');}
   }catch(e){btn.textContent=orig;btn.disabled=false;flash('quoteError','Something went wrong. Try again or call us.');}
 }
 
-/* ── Mini email-only updates signup ── */
-async function submitEmail(){
-  const hp=val('hp2');                                       /* decoy "website" field → sent as _hp */
-  if(Date.now()-RENDER_TS<MIN_FILL_MS) return;               /* timing trap: silently drop bot-speed submits */
-  const email=val('emailInput');
-  if(!email||!emailRe.test(email)) return flash('errorMsg','Please enter a valid email (e.g. name@domain.com)');
-  const btn=document.getElementById('miniBtn'),orig=btn.textContent;btn.textContent='...';btn.disabled=true;
-  try{
-    const data=await postLead({entity:'CBUS',dba:'Another Realm Compliance',source:'web:updates',email:email,_hp:hp});
-    if(data&&data.ok){document.getElementById('inputRow').style.display='none';document.getElementById('successMsg').style.display='block';}
-    else{btn.textContent=orig;btn.disabled=false;flash('errorMsg',(data&&data.error)||'Something went wrong. Try again.');}
-  }catch(e){btn.textContent=orig;btn.disabled=false;flash('errorMsg','Something went wrong. Try again.');}
-}
-document.getElementById('emailInput').addEventListener('keydown',function(e){if(e.key==='Enter')submitEmail();});
 </script>
 <!-- ============================================================
      ARC — estimate handoff from /quote
